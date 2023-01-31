@@ -11,5 +11,8 @@
     <color name="background_main_activity">#3772E7</color>
     <color name="background_button_main_activity">#FFFFFF</color>
     <color name="font_color_for_buttons_and_icons">#1A1B22</color>
+    <color name="switch_thumb_color">#AEAFB4</color>
+    <color name="switch_track_color">#E6E8EB</color>
+
 
 </resources>
