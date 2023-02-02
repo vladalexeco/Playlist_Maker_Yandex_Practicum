@@ -13,8 +13,6 @@ class SettingsActivity : AppCompatActivity() {
         val backArrowImageView = findViewById<ImageView>(R.id.backArrowImageView)
 
         backArrowImageView.setOnClickListener {
-            val intent = Intent(this@SettingsActivity, MainActivity::class.java)
-            startActivity(intent)
             finish()
         }
     }
