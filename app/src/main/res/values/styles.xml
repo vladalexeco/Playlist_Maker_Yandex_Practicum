@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MainActivityButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/null_dp</item>
+        <item name="android:layout_weight">@dimen/weight_1</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/font_color_for_buttons_and_icons</item>
+        <item name="iconTint">@color/font_color_for_buttons_and_icons</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">@dimen/icon_padding</item>
+        <item name="cornerRadius">@dimen/corner_radius_for_buttons</item>
+        <item name="backgroundTint">@color/background_button_main_activity</item>
+    </style>
+</resources>
