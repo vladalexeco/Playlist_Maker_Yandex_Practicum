@@ -9,5 +9,6 @@
     <dimen name="layout_margin_horizontal">16dp</dimen>
     <dimen name="null_dp">0dp</dimen>
     <dimen name="weight_1">1</dimen>
+    <dimen name="layout_margin_end">16dp</dimen>
 
 </resources>
