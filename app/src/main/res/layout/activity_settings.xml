@@ -55,9 +55,12 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/shareAppFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/layout_height_for_framelayout">
+        android:minHeight="@dimen/layout_height_for_framelayout"
+        android:clickable="true"
+        android:focusable="true">
 
         <TextView
             android:id="@+id/shareAppTextView"
@@ -71,9 +74,12 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/supportFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/layout_height_for_framelayout">
+        android:minHeight="@dimen/layout_height_for_framelayout"
+        android:clickable="true"
+        android:focusable="true">
 
         <TextView
             android:id="@+id/writeToSupportTextView"
@@ -87,9 +93,12 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/agreementFrameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/layout_height_for_framelayout">
+        android:minHeight="@dimen/layout_height_for_framelayout"
+        android:clickable="true"
+        android:focusable="true">
 
         <TextView
             android:id="@+id/userAgreementTextView"
