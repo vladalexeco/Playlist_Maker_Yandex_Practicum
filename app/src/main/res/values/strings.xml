@@ -14,4 +14,8 @@
     <string name="user_agreement">Пользовательское соглашение</string>
     <!--/SettingsActivity-->
 
+    <!--SearchActivity-->
+    <string name="input_hint">Поиск</string>
+    <!--/SearchActivity-->
+
 </resources>

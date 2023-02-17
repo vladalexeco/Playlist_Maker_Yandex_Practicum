@@ -10,16 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="56dp">
 
-
         <ImageView
             android:id="@+id/backArrowImageView"
-            style="@style/SettingsActivityImageViewToolbarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/arrow_settings_vector"
             android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
-            android:foreground="?attr/selectableItemBackground"/>
+            android:foreground="?attr/selectableItemBackground"
+            style="@style/SettingsActivityImageViewToolbarStyle"/>
 
         <TextView
             android:id="@+id/settingsTextView"

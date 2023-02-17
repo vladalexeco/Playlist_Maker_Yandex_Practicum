@@ -8,11 +8,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="background_main_activity">#3772E7</color>
+    <color name="soft_blue">#3772E7</color>
     <color name="background_button_main_activity">#FFFFFF</color>
     <color name="moderately_black">#1A1B22</color>
-    <color name="switch_thumb_color">#AEAFB4</color>
-    <color name="switch_track_color">#E6E8EB</color>
+    <color name="saturated_grey">#AEAFB4</color>
+    <color name="pale_grey">#E6E8EB</color>
     <color name="switch_thumb_color_night">#3772E7</color>
     <color name="switch_track_color_night">#284581</color>
     <color name="color_tint_for_icons">#AEAFB4</color>

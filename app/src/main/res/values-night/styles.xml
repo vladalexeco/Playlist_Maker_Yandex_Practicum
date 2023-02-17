@@ -33,7 +33,7 @@
     </style>
 
     <style name="SettingsActivityImageViewToolbarStyle">
-        <item name="android:tint">@color/white</item>
+        <item name="tint">@color/white</item>
     </style>
 
 </resources>
