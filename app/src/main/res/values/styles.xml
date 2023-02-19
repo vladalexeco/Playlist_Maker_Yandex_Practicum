@@ -5,14 +5,23 @@
         <item name="android:layout_height">@dimen/null_dp</item>
         <item name="android:layout_weight">@dimen/weight_1</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
-        <item name="android:textSize">22sp</item>
+        <item name="android:textSize">@dimen/large_font_size</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/moderately_black</item>
         <item name="iconTint">@color/moderately_black</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">@dimen/icon_padding</item>
         <item name="cornerRadius">@dimen/corner_radius_for_buttons</item>
-        <item name="backgroundTint">@color/background_button_main_activity</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="android:layout_marginHorizontal">@dimen/layout_margin_horizontal</item>
+    </style>
+
+    <style name="SettingsActivityFrameLayoutButtonStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/layout_height_for_framelayout</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
     </style>
 
     <style name="SettingsActivityTextViewStyle">
@@ -28,12 +37,30 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_vertical|end</item>
-        <item name="android:layout_marginEnd">@dimen/layout_margin_end</item>
-        <item name="android:tint">@color/color_tint_for_icons</item>
+        <item name="android:layout_marginEnd">@dimen/layout_margin_end_16dp</item>
+        <item name="tint">@color/saturated_grey</item>
     </style>
 
-    <style name="SettingsActivityImageViewToolbarStyle">
+    <style name="ImageViewToolbarStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/layout_margin_start_imageview_toolbar</item>
+        <item name="android:layout_marginTop">@dimen/layout_margin_top_imageview_toolbar</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="tint">@color/moderately_black</item>
+    </style>
+
+    <style name="TextViewToolbarStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/layout_margin_start_textview_toolbar</item>
+        <item name="android:layout_marginTop">@dimen/layout_margin_top_textview_toolbar</item>
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">@dimen/large_font_size</item>
+    </style>
+
+    <style name="SettingsActivitySwitchStyle">
+        <item name="android:checked">false</item>
     </style>
 
 </resources>

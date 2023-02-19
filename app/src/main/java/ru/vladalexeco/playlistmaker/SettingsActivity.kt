@@ -22,7 +22,7 @@ class SettingsActivity : AppCompatActivity() {
 
 
         shareAppFrameLayout.setOnClickListener {
-            val message = "https://practicum.yandex.ru/android-developer/"
+            val message = getString(R.string.course_android_developer)
 
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
@@ -35,8 +35,8 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         supportFrameLayout.setOnClickListener {
-            val message = "Спасибо разработчикам и разработчицам за крутое приложение!"
-            val subject = "Сообщение разработчикам и разработчицам приложения Playlist Maker"
+            val message = getString(R.string.mail_message)
+            val subject = getString(R.string.mail_subject)
             val mailArray = arrayOf("vladalexeco@yandex.ru")
 
             val shareIntent = Intent(Intent.ACTION_SENDTO)
@@ -48,7 +48,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         agreementFrameLayout.setOnClickListener {
-            val url = "https://yandex.ru/legal/practicum_offer/"
+            val url = getString(R.string.practicum_offer)
 
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(browserIntent)

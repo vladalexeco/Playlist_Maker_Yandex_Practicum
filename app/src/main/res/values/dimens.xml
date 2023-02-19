@@ -1,14 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!--Common dimensions-->
     <dimen name="large_font_size">22sp</dimen>
     <dimen name="medium_font_size">16sp</dimen>
-    <dimen name="corner_radius_for_buttons">16dp</dimen>
-    <dimen name="icon_padding">10dp</dimen>
-    <dimen name="margin_start_for_textView">11dp</dimen>
-    <dimen name="layout_height_for_framelayout">61dp</dimen>
-    <dimen name="layout_margin_horizontal">16dp</dimen>
+    <dimen name="toolbar_height">56dp</dimen>
     <dimen name="null_dp">0dp</dimen>
     <dimen name="weight_1">1</dimen>
-    <dimen name="layout_margin_end">16dp</dimen>
+    <dimen name="layout_margin_horizontal">16dp</dimen>
+    <dimen name="layout_margin_end_16dp">16dp</dimen>
+    <dimen name="layout_margin_start_imageview_toolbar">20dp</dimen>
+    <dimen name="layout_margin_top_imageview_toolbar">20dp</dimen>
+    <dimen name="layout_margin_start_textview_toolbar">28dp</dimen>
+    <dimen name="layout_margin_top_textview_toolbar">14dp</dimen>
+    <!--/Common dimensions-->
+
+    <!--MainActivity-->
+    <dimen name="corner_radius_for_buttons">16dp</dimen>
+    <dimen name="icon_padding">10dp</dimen>
+    <!--/MainActivity-->
+
+    <!--SettingsActivity-->
+    <dimen name="margin_start_for_textView">11dp</dimen>
+    <dimen name="layout_height_for_framelayout">61dp</dimen>
+    <dimen name="layout_margin_top_24dp">24dp</dimen>
+    <dimen name="layout_margin_end_for_switch">4dp</dimen>
+    <!--/SettingsActivity-->
+
+    <!--SearchActivity-->
+    <dimen name="layout_margin_top_8dp">8dp</dimen>
+    <dimen name="layout_margin_start_16dp">16dp</dimen>
+    <dimen name="layout_margin_start_32dp">32dp</dimen>
+    <!--/SearchActivity-->
+
+    <!--drawable-->
+    <dimen name="width_of_cursor">2dp</dimen>
+    <dimen name="radius_for_frame_layout">8dp</dimen>
+    <!--/drawable-->
 
 </resources>

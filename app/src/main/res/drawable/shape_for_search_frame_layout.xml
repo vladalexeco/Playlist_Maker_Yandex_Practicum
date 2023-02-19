@@ -4,5 +4,5 @@
 
     <solid android:color="@color/pale_grey" />
 
-    <corners android:radius="8dp" />
+    <corners android:radius="@dimen/radius_for_frame_layout" />
 </shape>
