@@ -11,6 +11,20 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
         <!-- Customize your theme here. -->
+        <item name="android:background">@color/white</item>
+        <item name="android:textColor">@color/moderately_black</item>
+        <item name="thumbTint">@color/saturated_grey</item>
+        <item name="trackTint">@color/pale_grey</item>
+        <item name="tint">@color/saturated_grey</item>
+        <item name="android:textColorHint">@color/saturated_grey</item>
+        <item name="android:textCursorDrawable">@drawable/color_cursor</item>
+    </style>
+
+    <style name="Theme.PlaylistMakerMainActivity" parent="Theme.PlaylistMaker">
+
+        <!-- Customize your theme here. -->
+        <item name="android:background">@color/soft_blue</item>
     </style>
 </resources>

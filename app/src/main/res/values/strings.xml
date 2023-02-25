@@ -12,6 +12,18 @@
     <string name="share_activity">Поделиться приложением</string>
     <string name="write_to_support">Написать в поддержку</string>
     <string name="user_agreement">Пользовательское соглашение</string>
+
+    <!--getString()-->
+    <string name="course_android_developer">"https://practicum.yandex.ru/android-developer/"</string>
+    <string name="mail_message">"Спасибо разработчикам и разработчицам за крутое приложение!"</string>
+    <string name="mail_subject">"Сообщение разработчикам и разработчицам приложения Playlist Maker"</string>
+    <string name="practicum_offer">"https://yandex.ru/legal/practicum_offer/"</string>
+    <!--/getString()-->
+
     <!--/SettingsActivity-->
+
+    <!--SearchActivity-->
+    <string name="input_hint">Поиск</string>
+    <!--/SearchActivity-->
 
 </resources>
