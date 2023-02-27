@@ -13,6 +13,7 @@
     <dimen name="layout_margin_top_imageview_toolbar">20dp</dimen>
     <dimen name="layout_margin_start_textview_toolbar">28dp</dimen>
     <dimen name="layout_margin_top_textview_toolbar">14dp</dimen>
+    <dimen name="layout_margin_top_24dp">24dp</dimen>
     <!--/Common dimensions-->
 
     <!--MainActivity-->
@@ -23,7 +24,6 @@
     <!--SettingsActivity-->
     <dimen name="margin_start_for_textView">11dp</dimen>
     <dimen name="layout_height_for_framelayout">61dp</dimen>
-    <dimen name="layout_margin_top_24dp">24dp</dimen>
     <dimen name="layout_margin_end_for_switch">4dp</dimen>
     <!--/SettingsActivity-->
 

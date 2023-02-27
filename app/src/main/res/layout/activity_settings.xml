@@ -54,7 +54,7 @@
 
         <ImageView
             android:id="@+id/shareAppImageView"
-            style="@style/SettingsActivityImageViewStyle"
+            style="@style/ActivityImageViewStyle"
             app:srcCompat="@drawable/share_vector" />
     </FrameLayout>
 
@@ -69,7 +69,7 @@
 
         <ImageView
             android:id="@+id/writeToSupportImageView"
-            style="@style/SettingsActivityImageViewStyle"
+            style="@style/ActivityImageViewStyle"
             app:srcCompat="@drawable/support_vector"/>
     </FrameLayout>
 
@@ -84,7 +84,7 @@
 
         <ImageView
             android:id="@+id/userAgreementImageView"
-            style="@style/SettingsActivityImageViewStyle"
+            style="@style/ActivityImageViewStyle"
             app:srcCompat="@drawable/angle_vector"/>
     </FrameLayout>
 

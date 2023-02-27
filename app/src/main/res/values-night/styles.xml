@@ -33,7 +33,7 @@
         <item name="android:textSize">@dimen/medium_font_size</item>
     </style>
 
-    <style name="SettingsActivityImageViewStyle">
+    <style name="ActivityImageViewStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_vertical|end</item>
@@ -61,6 +61,10 @@
 
     <style name="SettingsActivitySwitchStyle">
         <item name="android:checked">true</item>
+    </style>
+
+    <style name="DefaultImageViewStyle">
+        <item name="tint">@color/moderately_black</item>
     </style>
 
 </resources>

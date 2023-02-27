@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
         val searchButtonClickListener: View.OnClickListener = object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                val intent = Intent(this@MainActivity, SearchActivity::class.java)
+                val intent = Intent(this@MainActivity, SearchingActivity::class.java)
                 startActivity(intent)
             }
         }
