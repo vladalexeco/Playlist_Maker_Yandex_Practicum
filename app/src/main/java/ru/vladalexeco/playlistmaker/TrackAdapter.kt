@@ -12,10 +12,10 @@ class TrackAdapter(private val trackList: ArrayList<Track>): RecyclerView.Adapte
 
 
     class TrackHolder(view: View): RecyclerView.ViewHolder(view) {
-        var artwork: ImageView =view.findViewById<View>(R.id.artwork) as ImageView
-        var artistName: TextView = view.findViewById<View>(R.id.artistName) as TextView
-        var trackName: TextView = view.findViewById<View>(R.id.trackName) as TextView
-        var trackTime: TextView = view.findViewById<View>(R.id.trackTime) as TextView
+        var artwork = view.findViewById<ImageView>(R.id.artwork)
+        var artistName = view.findViewById<TextView>(R.id.artistName)
+        var trackName = view.findViewById<TextView>(R.id.trackName)
+        var trackTime = view.findViewById<TextView>(R.id.trackTime)
 
 
         fun bind(track: Track) {
