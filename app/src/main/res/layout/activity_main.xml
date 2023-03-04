@@ -20,6 +20,8 @@
     <Button
         android:id="@+id/searchButton"
         style="@style/MainActivityButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/null_dp"
         android:text="@string/search"
         app:icon="@drawable/search_vector"
         android:layout_marginTop="40dp"/>
@@ -27,6 +29,8 @@
     <Button
         android:id="@+id/mediaLibraryButton"
         style="@style/MainActivityButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/null_dp"
         android:text="@string/media_library"
         app:icon="@drawable/media_library_vector"
         android:layout_marginTop="16dp"/>
@@ -34,6 +38,8 @@
     <Button
         android:id="@+id/settingsButton"
         style="@style/MainActivityButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/null_dp"
         android:text="@string/settings"
         app:icon="@drawable/settings_vector"
         android:layout_marginTop="16dp"

@@ -21,8 +21,7 @@ class SearchingActivity : AppCompatActivity() {
     private lateinit var inputEditText: EditText
     private lateinit var clearButton: ImageView
     private lateinit var backArrowImageView: ImageView
-
-    var recyclerView: RecyclerView? = null
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -37,10 +36,11 @@ class SearchingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_searching)
 
-        recyclerView = findViewById<View>(R.id.recycler_view) as RecyclerView
-        recyclerView!!.layoutManager = LinearLayoutManager(this)
         val adapter = TrackAdapter(trackList)
-        recyclerView!!.adapter = adapter
+
+        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
 
         inputEditText = findViewById(R.id.inputEditText)
         clearButton = findViewById(R.id.clearIcon)

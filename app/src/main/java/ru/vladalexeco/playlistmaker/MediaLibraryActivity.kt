@@ -6,6 +6,6 @@ import android.os.Bundle
 class MediaLibraryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_check)
+        setContentView(R.layout.activity_medialibrary)
     }
 }

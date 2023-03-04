@@ -15,11 +15,15 @@
         <ImageView
             android:id="@+id/backArrowImageView"
             style="@style/ImageViewToolbarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:srcCompat="@drawable/arrow_settings_vector" />
 
         <TextView
             android:id="@+id/settingsTextView"
             style="@style/TextViewToolbarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="@string/search" />
 
     </androidx.appcompat.widget.Toolbar>
@@ -45,6 +49,7 @@
                 android:id="@+id/inputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/moderately_black"
                 android:layout_marginStart="@dimen/layout_margin_start_32dp"
                 android:hint="@string/search"
                 android:backgroundTint="@color/pale_grey"
@@ -52,6 +57,7 @@
 
             <ImageView
                 android:id="@+id/clearIcon"
+                style="@style/DefaultImageViewStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/button_clear"
