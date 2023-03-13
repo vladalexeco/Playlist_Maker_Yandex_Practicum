@@ -10,15 +10,20 @@ import androidx.appcompat.app.AppCompatActivity
 
 class SettingsActivity : AppCompatActivity() {
 
+    private lateinit var backArrowImageView: ImageView
+    private lateinit var shareAppFrameLayout: FrameLayout
+    private lateinit var supportFrameLayout: FrameLayout
+    private lateinit var agreementFrameLayout: FrameLayout
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val backArrowImageView = findViewById<ImageView>(R.id.backArrowImageView)
-        val shareAppFrameLayout = findViewById<FrameLayout>(R.id.shareAppFrameLayout)
-        val supportFrameLayout = findViewById<FrameLayout>(R.id.supportFrameLayout)
-        val agreementFrameLayout = findViewById<FrameLayout>(R.id.agreementFrameLayout)
+        backArrowImageView = findViewById(R.id.backArrowImageView)
+        shareAppFrameLayout = findViewById(R.id.shareAppFrameLayout)
+        supportFrameLayout = findViewById(R.id.supportFrameLayout)
+        agreementFrameLayout = findViewById(R.id.agreementFrameLayout)
 
 
         shareAppFrameLayout.setOnClickListener {
