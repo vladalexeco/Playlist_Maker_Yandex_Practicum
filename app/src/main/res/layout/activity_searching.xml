@@ -53,7 +53,9 @@
                 android:layout_marginStart="@dimen/layout_margin_start_32dp"
                 android:hint="@string/search"
                 android:backgroundTint="@color/pale_grey"
-                android:textSize="@dimen/medium_font_size"/>
+                android:textSize="@dimen/medium_font_size"
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
 
             <ImageView
                 android:id="@+id/clearIcon"
@@ -67,12 +69,81 @@
                 android:visibility="gone"/>
         </FrameLayout>
 
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="24dp"
+            />
+
+        <LinearLayout
+            android:id="@+id/not_found_widget"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="110dp"
+                android:src="@drawable/not_found_light_mode"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
+                android:textSize="19sp"
+                android:textColor="@color/black"
+                android:text="Ничего не нашлось"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bad_connection_widget"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="110dp"
+                android:src="@drawable/bad_connection_light_mode"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:layout_width="312dp"
+                android:textAlignment="center"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"
+                android:textSize="19sp"
+                android:text="Проблемы со связью\n\n Загрузка не удалась. Проверьте подключение к интернету"/>
+
+            <Button
+                android:id="@+id/update_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Обновить"
+                android:textAllCaps="false"
+                android:layout_marginTop="24dp"/>
+
+
+        </LinearLayout>
+
+
+
+    </FrameLayout>
+
+
+
 
 </LinearLayout>
