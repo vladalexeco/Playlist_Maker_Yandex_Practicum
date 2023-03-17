@@ -22,8 +22,12 @@
 
     <!--/SettingsActivity-->
 
-    <!--SearchActivity-->
+    <!--SearchingActivity-->
     <string name="input_hint">Поиск</string>
+    <string name="not_found">Ничего не нашлось</string>
+    <string name="bad_connection">Проблемы со связью\n\n Загрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="server_error">На сервере произошла ошибка</string>
+    <string name="update">Обновить</string>
     <!--/SearchActivity-->
 
 </resources>
