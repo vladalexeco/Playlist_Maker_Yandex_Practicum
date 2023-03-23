@@ -3,7 +3,9 @@
 
     <!--Common dimensions-->
     <dimen name="large_font_size">22sp</dimen>
+    <dimen name="medium_large_font_size_19">19sp</dimen>
     <dimen name="medium_font_size">16sp</dimen>
+    <dimen name="small_medium_font_size">14sp</dimen>
     <dimen name="small_text_size">11sp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="null_dp">0dp</dimen>
