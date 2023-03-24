@@ -119,12 +119,14 @@
 
             <TextView
                 android:id="@+id/bad_connection"
-                android:layout_width="312dp"
+                android:layout_width="wrap_content"
+                android:layout_marginHorizontal="24dp"
                 android:textAlignment="center"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_gravity="center"
-                android:textSize="@dimen/medium_large_font_size_19"/>
+                android:textSize="@dimen/medium_large_font_size_19"
+                tools:text="Проблемы со связью \n\nЗагрузка не удалась. Проверьте подключение к интернету"/>
 
             <Button
                 android:id="@+id/update_button"
