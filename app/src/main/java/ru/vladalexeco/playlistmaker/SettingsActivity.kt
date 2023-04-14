@@ -4,9 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.FrameLayout
+import android.widget.ImageSwitcher
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -14,17 +17,22 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var shareAppFrameLayout: FrameLayout
     private lateinit var supportFrameLayout: FrameLayout
     private lateinit var agreementFrameLayout: FrameLayout
+    private lateinit var themeSwitcher: SwitchMaterial
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
+        val sharedPreferences = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
+
         backArrowImageView = findViewById(R.id.backArrowImageView)
         shareAppFrameLayout = findViewById(R.id.shareAppFrameLayout)
         supportFrameLayout = findViewById(R.id.supportFrameLayout)
         agreementFrameLayout = findViewById(R.id.agreementFrameLayout)
+        themeSwitcher = findViewById(R.id.themeSwitcher)
 
+        themeSwitcher.isChecked = sharedPreferences.getBoolean(KEY_FOR_APP_THEME, false)
 
         shareAppFrameLayout.setOnClickListener {
             val message = getString(R.string.course_android_developer)
@@ -61,6 +69,14 @@ class SettingsActivity : AppCompatActivity() {
 
         backArrowImageView.setOnClickListener {
             finish()
+        }
+
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+
+            sharedPreferences.edit()
+                .putBoolean(KEY_FOR_APP_THEME, checked)
+                .apply()
         }
     }
 }
