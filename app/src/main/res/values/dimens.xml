@@ -6,6 +6,7 @@
     <dimen name="medium_large_font_size_19">19sp</dimen>
     <dimen name="medium_font_size">16sp</dimen>
     <dimen name="small_medium_font_size">14sp</dimen>
+    <dimen name="font_size_13sp">13sp</dimen>
     <dimen name="small_text_size">11sp</dimen>
     <dimen name="toolbar_height">56dp</dimen>
     <dimen name="null_dp">0dp</dimen>
@@ -52,5 +53,9 @@
     <dimen name="layout_margin_right_20dp">20dp</dimen>
     <dimen name="image_corner_radius">2dp</dimen>
     <!--/track_view-->
+
+    <!--    playlist_screen-->
+    <dimen name="corner_radius">8dp</dimen>
+    <!--    /playlist_screen-->
 
 </resources>
