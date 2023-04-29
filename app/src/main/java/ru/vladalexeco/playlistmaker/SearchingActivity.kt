@@ -2,6 +2,7 @@ package ru.vladalexeco.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -19,6 +20,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,6 +28,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 const val KEY_FOR_HISTORY_LIST = "key_for_history_list"
+const val KEY_FOR_PLAYLIST = "key_for_playlist"
 
 class SearchingActivity : AppCompatActivity() {
 
@@ -178,13 +181,20 @@ class SearchingActivity : AppCompatActivity() {
     }
 
     private fun clickToTrackList(track: Track) {
-        Toast.makeText(this, "Track ${track.trackName} on ${tracks.indexOf(track)} on main track list", Toast.LENGTH_SHORT).show()
         searchHistory?.addTrack(track)
         historyAdapter.notifyDataSetChanged()
+
+        val json = Gson().toJson(track)
+        val intent = Intent(this, PlaylistActivity::class.java)
+        intent.putExtra(KEY_FOR_PLAYLIST, json)
+        startActivity(intent)
     }
 
     private fun clickToHistoryTrackList(track: Track) {
-        Log.d("HISTORY", "You'd click on history track list with ${track.trackName}")
+        val json = Gson().toJson(track)
+        val intent = Intent(this, PlaylistActivity::class.java)
+        intent.putExtra(KEY_FOR_PLAYLIST, json)
+        startActivity(intent)
     }
 
     private fun showPlaceholder(flag: Boolean?, message: String = "") {
