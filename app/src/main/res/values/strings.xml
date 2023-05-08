@@ -29,5 +29,9 @@
     <string name="server_error">На сервере произошла ошибка</string>
     <string name="update">Обновить</string>
     <!--/SearchActivity-->
+    
+    <!--PlayerActivity-->
+    <string name="initial_time">00:00</string>
+    <!--/PlayerActivity-->
 
 </resources>
