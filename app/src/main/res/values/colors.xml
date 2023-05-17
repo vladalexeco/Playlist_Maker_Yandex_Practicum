@@ -13,4 +13,5 @@
     <color name="moderately_black">#1A1B22</color>
     <color name="saturated_grey">#AEAFB4</color>
     <color name="pale_grey">#E6E8EB</color>
+    <color name="progress_bar">#6200EE</color>
 </resources>

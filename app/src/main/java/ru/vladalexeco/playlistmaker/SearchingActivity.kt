@@ -1,4 +1,4 @@
-package ru.vladalexeco.playlistmaker
+ package ru.vladalexeco.playlistmaker
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,9 +6,10 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -16,8 +17,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
@@ -28,17 +29,24 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 const val KEY_FOR_HISTORY_LIST = "key_for_history_list"
-const val KEY_FOR_PLAYLIST = "key_for_playlist"
+const val KEY_FOR_PLAYER = "key_for_player"
 
 class SearchingActivity : AppCompatActivity() {
 
     var textFromSearchWidget = ""
 
-    private val baseUrl = "https://itunes.apple.com"
+    private val baseUrl = "http://itunes.apple.com"
 
-        companion object {
+    companion object {
         const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+
     }
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { search() }
+    private var isClickAllowed = true
 
     val tracks = ArrayList<Track>()
 
@@ -52,11 +60,15 @@ class SearchingActivity : AppCompatActivity() {
     private val trackService = retrofit.create(ItunesApi::class.java)
 
     private val adapter = TrackAdapter {
-        clickToTrackList(it)
+        if (clickDebounce()) {
+            clickToTrackList(it)
+        }
     }
 
     private val historyAdapter = TrackAdapter {
-        clickToHistoryTrackList(it)
+        if (clickDebounce()) {
+            clickToHistoryTrackList(it)
+        }
     }
 
     private lateinit var inputEditText: EditText
@@ -70,6 +82,7 @@ class SearchingActivity : AppCompatActivity() {
     private lateinit var historyWidget: LinearLayout
     private lateinit var historyRecyclerView: RecyclerView
     private lateinit var clearHistoryButton: Button
+    private lateinit var progressBar: ProgressBar
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,6 +114,7 @@ class SearchingActivity : AppCompatActivity() {
         badConnectionTextView = findViewById(R.id.bad_connection)
         historyWidget = findViewById(R.id.history_widget)
         clearHistoryButton = findViewById(R.id.clear_history_button)
+        progressBar = findViewById(R.id.progressBar)
 
         clearHistoryButton.setOnClickListener {
             searchHistory!!.clearHistoryList()
@@ -139,6 +153,8 @@ class SearchingActivity : AppCompatActivity() {
 
                 // On Focus Actions
                 historyWidget.visibility = if (inputEditText.hasFocus() && s?.isEmpty() == true && searchHistory!!.historyList.isNotEmpty()) View.VISIBLE else View.GONE
+
+                searchDebounce()
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -185,15 +201,15 @@ class SearchingActivity : AppCompatActivity() {
         historyAdapter.notifyDataSetChanged()
 
         val json = Gson().toJson(track)
-        val intent = Intent(this, PlaylistActivity::class.java)
-        intent.putExtra(KEY_FOR_PLAYLIST, json)
+        val intent = Intent(this, PlayerActivity::class.java)
+        intent.putExtra(KEY_FOR_PLAYER, json)
         startActivity(intent)
     }
 
     private fun clickToHistoryTrackList(track: Track) {
         val json = Gson().toJson(track)
-        val intent = Intent(this, PlaylistActivity::class.java)
-        intent.putExtra(KEY_FOR_PLAYLIST, json)
+        val intent = Intent(this, PlayerActivity::class.java)
+        intent.putExtra(KEY_FOR_PLAYER, json)
         startActivity(intent)
     }
 
@@ -216,33 +232,59 @@ class SearchingActivity : AppCompatActivity() {
     }
 
     private fun search() {
-        trackService.search(text=inputEditText.text.toString())
-            .enqueue(object: Callback<TrackResponse> {
-                override fun onResponse(
-                    call: Call<TrackResponse>,
-                    response: Response<TrackResponse>
-                ) {
-                    when(response.code()) {
-                        200 -> {
-                            if (response.body()?.tracks?.isNotEmpty() == true) {
-                                tracks.clear()
-                                tracks.addAll(response.body()?.tracks!!)
-                                adapter.notifyDataSetChanged()
-                                showPlaceholder(null)
-                            } else {
-                                showPlaceholder(true)
+        if (inputEditText.text.toString().isNotEmpty()) {
+
+            progressBar.visibility = View.VISIBLE
+
+            trackService.search(text=inputEditText.text.toString())
+                .enqueue(object: Callback<TrackResponse> {
+                    override fun onResponse(
+                        call: Call<TrackResponse>,
+                        response: Response<TrackResponse>
+                    ) {
+
+                        progressBar.visibility = View.GONE
+
+                        when(response.code()) {
+                            200 -> {
+                                if (response.body()?.tracks?.isNotEmpty() == true) {
+                                    tracks.clear()
+                                    tracks.addAll(response.body()?.tracks!!)
+                                    adapter.notifyDataSetChanged()
+                                    showPlaceholder(null)
+                                } else {
+                                    showPlaceholder(true)
+                                }
+                            }
+                            else -> {
+                                showPlaceholder(false, getString(R.string.server_error))
                             }
                         }
-                        else -> {
-                            showPlaceholder(false, getString(R.string.server_error))
-                        }
                     }
-                }
 
-                override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                    showPlaceholder(false, getString(R.string.bad_connection))
-                }
+                    override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
 
-            })
+                        progressBar.visibility = View.GONE
+
+                        showPlaceholder(false, getString(R.string.bad_connection))
+                    }
+
+                })
+        }
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
+        }
+
+        return current
     }
 }
