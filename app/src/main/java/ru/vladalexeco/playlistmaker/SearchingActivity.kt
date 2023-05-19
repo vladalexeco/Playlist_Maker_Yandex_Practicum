@@ -27,8 +27,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.vladalexeco.playlistmaker.presentation.ui.PlayerActivity
 
-const val KEY_FOR_HISTORY_LIST = "key_for_history_list"
+ const val KEY_FOR_HISTORY_LIST = "key_for_history_list"
 const val KEY_FOR_PLAYER = "key_for_player"
 
 class SearchingActivity : AppCompatActivity() {
