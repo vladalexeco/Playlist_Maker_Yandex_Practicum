@@ -1,15 +1,18 @@
-package ru.vladalexeco.playlistmaker
+package ru.vladalexeco.playlistmaker.presentation.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.FrameLayout
-import android.widget.ImageSwitcher
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
+import ru.vladalexeco.playlistmaker.R
+import ru.vladalexeco.playlistmaker.presentation.App
+import ru.vladalexeco.playlistmaker.presentation.KEY_FOR_APP_THEME
+import ru.vladalexeco.playlistmaker.presentation.SHARED_PREFERENCES
+
 
 class SettingsActivity : AppCompatActivity() {
 

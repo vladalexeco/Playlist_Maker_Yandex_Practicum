@@ -1,4 +1,4 @@
-package ru.vladalexeco.playlistmaker
+package ru.vladalexeco.playlistmaker.presentation
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate

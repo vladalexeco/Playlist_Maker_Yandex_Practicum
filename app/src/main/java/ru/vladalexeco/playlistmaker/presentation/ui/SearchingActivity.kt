@@ -1,15 +1,15 @@
- package ru.vladalexeco.playlistmaker
+ package ru.vladalexeco.playlistmaker.presentation.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -22,21 +22,31 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import ru.vladalexeco.playlistmaker.presentation.ui.PlayerActivity
+import ru.vladalexeco.playlistmaker.*
+import ru.vladalexeco.playlistmaker.data.interfaces.ResponseFromServerListener
+import ru.vladalexeco.playlistmaker.data.models.ITunesServerResponse
+import ru.vladalexeco.playlistmaker.data.repository.HistoryTrackRepositorySHImpl
+import ru.vladalexeco.playlistmaker.data.repository.ITunesRepositoryImpl
+import ru.vladalexeco.playlistmaker.data.retrofit.ServerResponse
+import ru.vladalexeco.playlistmaker.domain.models.Track
+import ru.vladalexeco.playlistmaker.domain.repository.HistoryTrackRepositorySH
+import ru.vladalexeco.playlistmaker.domain.repository.ITunesRepository
+import ru.vladalexeco.playlistmaker.domain.usecases.GetTracksFromITunes
+import ru.vladalexeco.playlistmaker.domain.usecases.HistoryListInteractorImpl
+import ru.vladalexeco.playlistmaker.presentation.adapters.TrackAdapter
+import ru.vladalexeco.playlistmaker.presentation.interfaces.TrackHistoryInteractor
 
  const val KEY_FOR_HISTORY_LIST = "key_for_history_list"
 const val KEY_FOR_PLAYER = "key_for_player"
 
-class SearchingActivity : AppCompatActivity() {
+class SearchingActivity : AppCompatActivity(), ResponseFromServerListener {
 
     var textFromSearchWidget = ""
 
-    private val baseUrl = "http://itunes.apple.com"
+
+    val iTunesRepositoryImpl: ITunesRepository = ITunesRepositoryImpl()
+    lateinit var getTracksFromITunes: GetTracksFromITunes
+
 
     companion object {
         const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
@@ -51,14 +61,8 @@ class SearchingActivity : AppCompatActivity() {
 
     val tracks = ArrayList<Track>()
 
-    var searchHistory: SearchHistory? = null
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(baseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private val trackService = retrofit.create(ItunesApi::class.java)
+    private lateinit var historyTrackRepository: HistoryTrackRepositorySH
+    private lateinit var historyListInteractor: TrackHistoryInteractor
 
     private val adapter = TrackAdapter {
         if (clickDebounce()) {
@@ -91,10 +95,13 @@ class SearchingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_searching)
 
-        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        historyTrackRepository = HistoryTrackRepositorySHImpl(this)
+        historyListInteractor = HistoryListInteractorImpl(historyTrackRepository)
 
-        val sharedPreferences: SharedPreferences = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
-        searchHistory = SearchHistory(sharedPreferences)
+        (iTunesRepositoryImpl as ITunesRepositoryImpl).setResponseFromServerListener(this)
+        getTracksFromITunes = GetTracksFromITunes(iTunesRepositoryImpl)
+
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         recyclerView = findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -104,7 +111,7 @@ class SearchingActivity : AppCompatActivity() {
         historyRecyclerView = findViewById(R.id.history_recycle_view)
         historyRecyclerView.layoutManager = LinearLayoutManager(this)
         historyRecyclerView.adapter = historyAdapter
-        historyAdapter.tracks = searchHistory!!.historyList
+        historyAdapter.tracks = historyListInteractor.getHistoryList()
 
         inputEditText = findViewById(R.id.inputEditText)
         clearButton = findViewById(R.id.clearIcon)
@@ -118,14 +125,14 @@ class SearchingActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
 
         clearHistoryButton.setOnClickListener {
-            searchHistory!!.clearHistoryList()
+            historyListInteractor.clearHistoryList()
             adapter.notifyDataSetChanged()
             historyWidget.visibility = View.GONE
         }
 
         // On Focus Actions
         inputEditText.setOnFocusChangeListener { view, hasFocus ->
-            historyWidget.visibility = if (hasFocus && inputEditText.text.isEmpty() && searchHistory!!.historyList.isNotEmpty()) View.VISIBLE else View.GONE
+            historyWidget.visibility = if (hasFocus && inputEditText.text.isEmpty() && historyListInteractor.getHistoryList().isNotEmpty()) View.VISIBLE else View.GONE
         }
 
         clearButton.setOnClickListener {
@@ -153,7 +160,7 @@ class SearchingActivity : AppCompatActivity() {
                 textFromSearchWidget = inputEditText.text.toString()
 
                 // On Focus Actions
-                historyWidget.visibility = if (inputEditText.hasFocus() && s?.isEmpty() == true && searchHistory!!.historyList.isNotEmpty()) View.VISIBLE else View.GONE
+                historyWidget.visibility = if (inputEditText.hasFocus() && s?.isEmpty() == true && historyListInteractor.getHistoryList().isNotEmpty()) View.VISIBLE else View.GONE
 
                 searchDebounce()
             }
@@ -176,7 +183,12 @@ class SearchingActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        searchHistory?.writeToSH(searchHistory!!.historyList)
+        historyListInteractor.saveHistoryList()
+    }
+
+    override fun onDestroy() {
+        (iTunesRepositoryImpl as ITunesRepositoryImpl).removeResponseFromServerListener()
+        super.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -198,7 +210,7 @@ class SearchingActivity : AppCompatActivity() {
     }
 
     private fun clickToTrackList(track: Track) {
-        searchHistory?.addTrack(track)
+        historyListInteractor.addTrackToHistoryList(track)
         historyAdapter.notifyDataSetChanged()
 
         val json = Gson().toJson(track)
@@ -237,40 +249,8 @@ class SearchingActivity : AppCompatActivity() {
 
             progressBar.visibility = View.VISIBLE
 
-            trackService.search(text=inputEditText.text.toString())
-                .enqueue(object: Callback<TrackResponse> {
-                    override fun onResponse(
-                        call: Call<TrackResponse>,
-                        response: Response<TrackResponse>
-                    ) {
+            getTracksFromITunes.execute(inputEditText.text.toString())
 
-                        progressBar.visibility = View.GONE
-
-                        when(response.code()) {
-                            200 -> {
-                                if (response.body()?.tracks?.isNotEmpty() == true) {
-                                    tracks.clear()
-                                    tracks.addAll(response.body()?.tracks!!)
-                                    adapter.notifyDataSetChanged()
-                                    showPlaceholder(null)
-                                } else {
-                                    showPlaceholder(true)
-                                }
-                            }
-                            else -> {
-                                showPlaceholder(false, getString(R.string.server_error))
-                            }
-                        }
-                    }
-
-                    override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-
-                        progressBar.visibility = View.GONE
-
-                        showPlaceholder(false, getString(R.string.bad_connection))
-                    }
-
-                })
         }
     }
 
@@ -287,5 +267,38 @@ class SearchingActivity : AppCompatActivity() {
         }
 
         return current
+    }
+
+    override fun onResponseFromServerOccurred(iTunesServerResponse: ITunesServerResponse) {
+
+        progressBar.visibility = View.GONE
+
+        when (iTunesServerResponse.serverResponse) {
+            ServerResponse.SUCCESS -> {
+                when (iTunesServerResponse.serverResponseCode) {
+                    200 -> {
+                        if (iTunesServerResponse.tracks.isNotEmpty()) {
+                            tracks.clear()
+                            tracks.addAll(iTunesServerResponse.tracks)
+                            adapter.notifyDataSetChanged()
+                            showPlaceholder(null)
+                        } else {
+                            showPlaceholder(true)
+                        }
+
+                    }
+
+                    else -> showPlaceholder(false, getString(R.string.server_error))
+                }
+            }
+
+            ServerResponse.FAILED -> {
+                showPlaceholder(false, getString(R.string.bad_connection))
+            }
+
+            else -> {
+                Log.d("SERVER", "Something goes wrong")
+            }
+        }
     }
 }

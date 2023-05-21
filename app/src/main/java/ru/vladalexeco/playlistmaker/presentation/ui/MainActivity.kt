@@ -1,10 +1,11 @@
-package ru.vladalexeco.playlistmaker
+package ru.vladalexeco.playlistmaker.presentation.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import ru.vladalexeco.playlistmaker.R
 
 class MainActivity : AppCompatActivity() {
 

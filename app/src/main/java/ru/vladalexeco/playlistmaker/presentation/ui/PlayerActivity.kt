@@ -8,9 +8,8 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
-import ru.vladalexeco.playlistmaker.KEY_FOR_PLAYER
 import ru.vladalexeco.playlistmaker.R
-import ru.vladalexeco.playlistmaker.Track
+import ru.vladalexeco.playlistmaker.domain.models.Track
 import ru.vladalexeco.playlistmaker.domain.interfaces.TrackTimeEventListener
 import ru.vladalexeco.playlistmaker.domain.interfaces.UiEventListener
 import ru.vladalexeco.playlistmaker.domain.models.TrackUrl
