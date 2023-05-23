@@ -23,8 +23,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import ru.vladalexeco.playlistmaker.*
-import ru.vladalexeco.playlistmaker.data.interfaces.ResponseFromServerListener
-import ru.vladalexeco.playlistmaker.data.models.ITunesServerResponse
+import ru.vladalexeco.playlistmaker.domain.interfaces.ResponseFromServerListener
+import ru.vladalexeco.playlistmaker.domain.models.ITunesServerResponse
 import ru.vladalexeco.playlistmaker.data.repository.HistoryTrackRepositorySHImpl
 import ru.vladalexeco.playlistmaker.data.repository.ITunesRepositoryImpl
 import ru.vladalexeco.playlistmaker.data.retrofit.ServerResponse
@@ -34,7 +34,7 @@ import ru.vladalexeco.playlistmaker.domain.repository.ITunesRepository
 import ru.vladalexeco.playlistmaker.domain.usecases.GetTracksFromITunes
 import ru.vladalexeco.playlistmaker.domain.usecases.HistoryListInteractorImpl
 import ru.vladalexeco.playlistmaker.presentation.adapters.TrackAdapter
-import ru.vladalexeco.playlistmaker.presentation.interfaces.TrackHistoryInteractor
+import ru.vladalexeco.playlistmaker.domain.interfaces.TrackHistoryInteractor
 
  const val KEY_FOR_HISTORY_LIST = "key_for_history_list"
 const val KEY_FOR_PLAYER = "key_for_player"

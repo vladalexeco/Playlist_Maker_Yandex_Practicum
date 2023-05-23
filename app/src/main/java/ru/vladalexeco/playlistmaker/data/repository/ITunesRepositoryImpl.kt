@@ -1,14 +1,12 @@
 package ru.vladalexeco.playlistmaker.data.repository
 
-import android.view.View
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.vladalexeco.playlistmaker.R
-import ru.vladalexeco.playlistmaker.data.interfaces.ResponseFromServerListener
-import ru.vladalexeco.playlistmaker.data.models.ITunesServerResponse
+import ru.vladalexeco.playlistmaker.domain.interfaces.ResponseFromServerListener
+import ru.vladalexeco.playlistmaker.domain.models.ITunesServerResponse
 import ru.vladalexeco.playlistmaker.data.retrofit.ITunesApi
 import ru.vladalexeco.playlistmaker.data.retrofit.ServerResponse
 import ru.vladalexeco.playlistmaker.data.retrofit.TrackResponse

@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import ru.vladalexeco.playlistmaker.R
+import ru.vladalexeco.playlistmaker.data.repository.AudioPlayerRepositoryImpl
 import ru.vladalexeco.playlistmaker.domain.models.Track
 import ru.vladalexeco.playlistmaker.domain.interfaces.TrackTimeEventListener
 import ru.vladalexeco.playlistmaker.domain.interfaces.UiEventListener
@@ -17,11 +18,12 @@ import ru.vladalexeco.playlistmaker.domain.usecases.AudioPlayerInteractorImpl
 import ru.vladalexeco.playlistmaker.domain.usecases.STATE_PAUSED
 import ru.vladalexeco.playlistmaker.domain.usecases.STATE_PLAYING
 import ru.vladalexeco.playlistmaker.domain.usecases.STATE_PREPARED
-import ru.vladalexeco.playlistmaker.presentation.interfaces.AudioPlayer
+import ru.vladalexeco.playlistmaker.domain.interfaces.AudioPlayerInteractor
+import ru.vladalexeco.playlistmaker.domain.interfaces.AudioPlayerRepository
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PlayerActivity : AppCompatActivity(), UiEventListener, TrackTimeEventListener {
+class  PlayerActivity : AppCompatActivity(), UiEventListener, TrackTimeEventListener {
 
     private var track: Track? = null
     private var url: String? = null
@@ -38,7 +40,8 @@ class PlayerActivity : AppCompatActivity(), UiEventListener, TrackTimeEventListe
     private lateinit var playButton: ImageButton
     private lateinit var durationInTime: TextView
 
-    private lateinit var audioPlayer: AudioPlayer
+    private lateinit var audioPlayer: AudioPlayerInteractor
+    private lateinit var audioPlayerRepository: AudioPlayerRepository
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,7 +98,9 @@ class PlayerActivity : AppCompatActivity(), UiEventListener, TrackTimeEventListe
 
             url = track!!.previewUrl
 
-            audioPlayer = AudioPlayerInteractorImpl(TrackUrl(url))
+
+            audioPlayerRepository = AudioPlayerRepositoryImpl()
+            audioPlayer = AudioPlayerInteractorImpl(TrackUrl(url), audioPlayerRepository)
             (audioPlayer as AudioPlayerInteractorImpl).setUiEventListener(this)
             (audioPlayer as AudioPlayerInteractorImpl).setTrackTimeEventListener(this)
 

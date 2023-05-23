@@ -1,4 +1,4 @@
-package ru.vladalexeco.playlistmaker.presentation.interfaces
+package ru.vladalexeco.playlistmaker.domain.interfaces
 
 import ru.vladalexeco.playlistmaker.domain.models.Track
 

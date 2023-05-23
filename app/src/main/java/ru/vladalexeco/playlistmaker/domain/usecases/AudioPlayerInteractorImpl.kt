@@ -1,12 +1,12 @@
 package ru.vladalexeco.playlistmaker.domain.usecases
 
-import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
 import ru.vladalexeco.playlistmaker.domain.interfaces.TrackTimeEventListener
 import ru.vladalexeco.playlistmaker.domain.interfaces.UiEventListener
 import ru.vladalexeco.playlistmaker.domain.models.TrackUrl
-import ru.vladalexeco.playlistmaker.presentation.interfaces.AudioPlayer
+import ru.vladalexeco.playlistmaker.domain.interfaces.AudioPlayerInteractor
+import ru.vladalexeco.playlistmaker.domain.interfaces.AudioPlayerRepository
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -15,9 +15,8 @@ const val STATE_PREPARED = 1
 const val STATE_PLAYING = 2
 const val STATE_PAUSED = 3
 
-class AudioPlayerInteractorImpl(private val trackUrl: TrackUrl): AudioPlayer {
+class AudioPlayerInteractorImpl(private val trackUrl: TrackUrl, private val audioPlayerRepository: AudioPlayerRepository): AudioPlayerInteractor {
 
-    private val mediaPlayer = MediaPlayer()
     private val mainThreadHandler = Handler(Looper.getMainLooper())
 
     override var playerState = STATE_DEFAULT
@@ -54,36 +53,37 @@ class AudioPlayerInteractorImpl(private val trackUrl: TrackUrl): AudioPlayer {
     }
 
     override fun play() {
-        mediaPlayer.start()
+        audioPlayerRepository.play()
         playerState = STATE_PLAYING
         mainThreadHandler.postDelayed(cycleRunnable, UPDATE_TIME_INFO_MS)
     }
 
     override fun pause() {
-        mediaPlayer.pause()
+        audioPlayerRepository.pause()
         playerState = STATE_PAUSED
         mainThreadHandler.removeCallbacks(cycleRunnable)
     }
 
     override fun release() {
         mainThreadHandler.removeCallbacks(cycleRunnable)
-        mediaPlayer.release()
+        audioPlayerRepository.release()
     }
 
     private fun prepare() {
-        mediaPlayer.setDataSource(trackUrl.url)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playerState = STATE_PREPARED
-        }
-        mediaPlayer.setOnCompletionListener {
-            playerState = STATE_PREPARED
-            mainThreadHandler.removeCallbacks(cycleRunnable)
-            listener?.onEventOccurred()
-        }
+        audioPlayerRepository.prepare(
+            trackUrl = trackUrl,
+            callbackOnPrepared = {
+                playerState = STATE_PREPARED
+            },
+            callbackOnCompletion = {
+                playerState = STATE_PREPARED
+                mainThreadHandler.removeCallbacks(cycleRunnable)
+                listener?.onEventOccurred()
+            }
+        )
     }
 
-    private fun getTimeFormat() = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+    private fun getTimeFormat() = SimpleDateFormat("mm:ss", Locale.getDefault()).format(audioPlayerRepository.currentPos())
 
     companion object {
         private const val UPDATE_TIME_INFO_MS = 300L

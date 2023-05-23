@@ -1,4 +1,4 @@
-package ru.vladalexeco.playlistmaker.data.models
+package ru.vladalexeco.playlistmaker.domain.models
 
 import ru.vladalexeco.playlistmaker.data.retrofit.ServerResponse
 import ru.vladalexeco.playlistmaker.domain.models.Track
