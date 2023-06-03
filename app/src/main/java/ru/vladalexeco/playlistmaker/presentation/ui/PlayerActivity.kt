@@ -1,35 +1,29 @@
-package ru.vladalexeco.playlistmaker
+package ru.vladalexeco.playlistmaker.presentation.ui
 
-import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
+import ru.vladalexeco.playlistmaker.R
+import ru.vladalexeco.playlistmaker.data.repository.AudioPlayerRepositoryImpl
+import ru.vladalexeco.playlistmaker.domain.models.Track
+import ru.vladalexeco.playlistmaker.domain.interfaces.TrackTimeEventListener
+import ru.vladalexeco.playlistmaker.domain.interfaces.UiEventListener
+import ru.vladalexeco.playlistmaker.domain.models.TrackUrl
+import ru.vladalexeco.playlistmaker.domain.usecases.AudioPlayerInteractorImpl
+import ru.vladalexeco.playlistmaker.domain.usecases.STATE_PAUSED
+import ru.vladalexeco.playlistmaker.domain.usecases.STATE_PLAYING
+import ru.vladalexeco.playlistmaker.domain.usecases.STATE_PREPARED
+import ru.vladalexeco.playlistmaker.domain.interfaces.AudioPlayerInteractor
+import ru.vladalexeco.playlistmaker.domain.interfaces.AudioPlayerRepository
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PlayerActivity : AppCompatActivity() {
-
-    private var playerState = STATE_DEFAULT
-    private var mediaPlayer = MediaPlayer()
-
-    private var mainThreadHandler: Handler? = null
-
-    private val cycleRunnable = object: Runnable {
-        override fun run() {
-            val formattedTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
-            Log.d("TIME", formattedTime)
-            durationInTime.text = formattedTime
-            mainThreadHandler?.postDelayed(this, UPDATE_TIME_INFO)
-        }
-    }
+class  PlayerActivity : AppCompatActivity(), UiEventListener, TrackTimeEventListener {
 
     private var track: Track? = null
     private var url: String? = null
@@ -46,12 +40,13 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var playButton: ImageButton
     private lateinit var durationInTime: TextView
 
+    private lateinit var audioPlayer: AudioPlayerInteractor
+    private lateinit var audioPlayerRepository: AudioPlayerRepository
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.player_screen)
-
-        mainThreadHandler = Handler(Looper.getMainLooper())
 
         backArrow = findViewById(R.id.backArrowPlaylist)
         coverImage = findViewById(R.id.coverMax)
@@ -103,7 +98,11 @@ class PlayerActivity : AppCompatActivity() {
 
             url = track!!.previewUrl
 
-            preparePlayer()
+
+            audioPlayerRepository = AudioPlayerRepositoryImpl()
+            audioPlayer = AudioPlayerInteractorImpl(TrackUrl(url), audioPlayerRepository)
+            (audioPlayer as AudioPlayerInteractorImpl).setUiEventListener(this)
+            (audioPlayer as AudioPlayerInteractorImpl).setTrackTimeEventListener(this)
 
         }
 
@@ -115,61 +114,37 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        mainThreadHandler?.removeCallbacks(cycleRunnable)
-        mediaPlayer.release()
+        audioPlayer.release()
+        (audioPlayer as AudioPlayerInteractorImpl).removeUiEventListener()
+        (audioPlayer as AudioPlayerInteractorImpl).removerTrackTimeEventListener()
+
         super.onDestroy()
     }
 
-    private fun preparePlayer() {
-
-        durationInTime.text = getString(R.string.initial_time)
-
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener {
-            playerState = STATE_PREPARED
-        }
-        mediaPlayer.setOnCompletionListener {
-            playerState = STATE_PREPARED
-
-            mainThreadHandler?.removeCallbacks(cycleRunnable)
-            durationInTime.text = getString(R.string.initial_time)
-
-            playButton.setImageResource(R.drawable.play_button)
-        }
-    }
-
     private fun startPlayer() {
-        mediaPlayer.start()
+        audioPlayer.play()
         playButton.setImageResource(R.drawable.pause_button)
-        playerState = STATE_PLAYING
-
-        mainThreadHandler?.postDelayed(cycleRunnable, UPDATE_TIME_INFO)
     }
 
     private fun pausePlayer() {
-        mediaPlayer.pause()
+        audioPlayer.pause()
         playButton.setImageResource(R.drawable.play_button)
-        playerState = STATE_PAUSED
-
-        mainThreadHandler?.removeCallbacks(cycleRunnable)
-
     }
 
     private fun playbackControl() {
-        when(playerState) {
-            STATE_PLAYING -> pausePlayer()
+        when(audioPlayer.playerState) {
+             STATE_PLAYING -> pausePlayer()
             STATE_PAUSED, STATE_PREPARED -> startPlayer()
         }
     }
 
-    companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
+    override fun onEventOccurred() {
+        durationInTime.text = getString(R.string.initial_time)
+        playButton.setImageResource(R.drawable.play_button)
+    }
 
-        private const val UPDATE_TIME_INFO = 500L
+    override fun onTrackTimeEventOccurred(trackTime: String) {
+        durationInTime.text = trackTime
     }
 }
 

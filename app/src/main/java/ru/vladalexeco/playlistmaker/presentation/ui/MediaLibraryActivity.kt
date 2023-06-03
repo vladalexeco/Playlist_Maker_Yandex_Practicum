@@ -1,7 +1,8 @@
-package ru.vladalexeco.playlistmaker
+package ru.vladalexeco.playlistmaker.presentation.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import ru.vladalexeco.playlistmaker.R
 
 class MediaLibraryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

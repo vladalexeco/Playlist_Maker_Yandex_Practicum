@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SearchingActivity"
+    tools:context=".presentation.ui.SearchingActivity"
     android:theme="@style/Theme.PlaylistMaker">
 
     <androidx.appcompat.widget.Toolbar

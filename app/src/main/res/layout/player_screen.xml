@@ -231,6 +231,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="8dp"
+            android:text="00:00"
             app:layout_constraintBottom_toTopOf="@+id/durationLabel"
             app:layout_constraintEnd_toStartOf="@+id/endGuideline"
             app:layout_constraintStart_toStartOf="@+id/startGuideline"
