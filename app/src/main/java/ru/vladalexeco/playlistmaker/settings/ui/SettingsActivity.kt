@@ -1,4 +1,4 @@
-package ru.vladalexeco.playlistmaker.presentation.ui
+package ru.vladalexeco.playlistmaker.settings.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -7,12 +7,14 @@ import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.switchmaterial.SwitchMaterial
 import ru.vladalexeco.playlistmaker.R
-import ru.vladalexeco.playlistmaker.presentation.App
-import ru.vladalexeco.playlistmaker.presentation.KEY_FOR_APP_THEME
-import ru.vladalexeco.playlistmaker.presentation.SHARED_PREFERENCES
-
+import ru.vladalexeco.playlistmaker.App
+import ru.vladalexeco.playlistmaker.KEY_FOR_APP_THEME
+import ru.vladalexeco.playlistmaker.SHARED_PREFERENCES
+import ru.vladalexeco.playlistmaker.settings.presentation.SettingsViewModel
+import ru.vladalexeco.playlistmaker.settings.presentation.SettingsViewModelFactory
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -22,12 +24,14 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var agreementFrameLayout: FrameLayout
     private lateinit var themeSwitcher: SwitchMaterial
 
+    private lateinit var viewModel: SettingsViewModel
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        val sharedPreferences = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
+        viewModel = ViewModelProvider(this, SettingsViewModelFactory(this))[SettingsViewModel::class.java]
 
         backArrowImageView = findViewById(R.id.backArrowImageView)
         shareAppFrameLayout = findViewById(R.id.shareAppFrameLayout)
@@ -35,10 +39,10 @@ class SettingsActivity : AppCompatActivity() {
         agreementFrameLayout = findViewById(R.id.agreementFrameLayout)
         themeSwitcher = findViewById(R.id.themeSwitcher)
 
-        themeSwitcher.isChecked = sharedPreferences.getBoolean(KEY_FOR_APP_THEME, false)
+        themeSwitcher.isChecked = viewModel.getThemeState()
 
         shareAppFrameLayout.setOnClickListener {
-            val message = getString(R.string.course_android_developer)
+            val message = viewModel.getLinkToCourse()
 
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
@@ -51,9 +55,9 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         supportFrameLayout.setOnClickListener {
-            val message = getString(R.string.mail_message)
-            val subject = getString(R.string.mail_subject)
-            val mailArray = arrayOf("vladalexeco@yandex.ru")
+            val message = viewModel.getEmailMessage()
+            val subject = viewModel.getEmailSubject()
+            val mailArray = viewModel.getArrayOfEmailAddresses()
 
             val shareIntent = Intent(Intent.ACTION_SENDTO)
             shareIntent.data = Uri.parse("mailto:")
@@ -64,7 +68,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         agreementFrameLayout.setOnClickListener {
-            val url = getString(R.string.practicum_offer)
+            val url = viewModel.getPracticumOffer()
 
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(browserIntent)
@@ -75,11 +79,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
-
-            sharedPreferences.edit()
-                .putBoolean(KEY_FOR_APP_THEME, checked)
-                .apply()
+            viewModel.saveAndChangeThemeState(checked)
         }
     }
 }

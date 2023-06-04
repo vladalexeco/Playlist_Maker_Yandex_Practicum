@@ -1,10 +1,10 @@
-package ru.vladalexeco.playlistmaker.presentation
+package ru.vladalexeco.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 
-const val SHARED_PREFERENCES = "shared_preferences"
-const val KEY_FOR_APP_THEME = "key_for_app_theme"
+const val SHARED_PREFERENCES = "SHARED_PREFERENCES"
+const val KEY_FOR_APP_THEME = "KEY_FOR_APP_THEME"
 
 
 class App: Application() {

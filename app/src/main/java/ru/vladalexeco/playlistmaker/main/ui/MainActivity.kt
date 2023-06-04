@@ -1,4 +1,4 @@
-package ru.vladalexeco.playlistmaker.presentation.ui
+package ru.vladalexeco.playlistmaker.main.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import ru.vladalexeco.playlistmaker.R
+import ru.vladalexeco.playlistmaker.presentation.ui.MediaLibraryActivity
+import ru.vladalexeco.playlistmaker.presentation.ui.SearchingActivity
+import ru.vladalexeco.playlistmaker.settings.ui.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
