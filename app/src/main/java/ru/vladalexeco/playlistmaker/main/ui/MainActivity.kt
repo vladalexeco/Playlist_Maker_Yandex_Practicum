@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.Button
 import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.presentation.ui.MediaLibraryActivity
-import ru.vladalexeco.playlistmaker.presentation.ui.SearchingActivity
+import ru.vladalexeco.playlistmaker.search.ui.SearchingActivity
 import ru.vladalexeco.playlistmaker.settings.ui.SettingsActivity
 
 class MainActivity : AppCompatActivity() {

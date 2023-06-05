@@ -10,7 +10,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
 import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.data.repository.AudioPlayerRepositoryImpl
-import ru.vladalexeco.playlistmaker.domain.models.Track
+import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.domain.interfaces.TrackTimeEventListener
 import ru.vladalexeco.playlistmaker.domain.interfaces.UiEventListener
 import ru.vladalexeco.playlistmaker.domain.models.TrackUrl
@@ -20,6 +20,7 @@ import ru.vladalexeco.playlistmaker.domain.usecases.STATE_PLAYING
 import ru.vladalexeco.playlistmaker.domain.usecases.STATE_PREPARED
 import ru.vladalexeco.playlistmaker.domain.interfaces.AudioPlayerInteractor
 import ru.vladalexeco.playlistmaker.domain.interfaces.AudioPlayerRepository
+import ru.vladalexeco.playlistmaker.search.ui.KEY_FOR_PLAYER
 import java.text.SimpleDateFormat
 import java.util.*
 

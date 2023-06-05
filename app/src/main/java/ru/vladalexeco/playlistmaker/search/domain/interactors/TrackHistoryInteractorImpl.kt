@@ -1,10 +1,10 @@
-package ru.vladalexeco.playlistmaker.domain.usecases
+package ru.vladalexeco.playlistmaker.search.domain.interactors
 
-import ru.vladalexeco.playlistmaker.domain.models.Track
-import ru.vladalexeco.playlistmaker.domain.repository.HistoryTrackRepositorySH
-import ru.vladalexeco.playlistmaker.domain.interfaces.TrackHistoryInteractor
+import ru.vladalexeco.playlistmaker.search.domain.interfaces.HistoryTrackRepositorySH
+import ru.vladalexeco.playlistmaker.search.domain.interfaces.TrackHistoryInteractor
+import ru.vladalexeco.playlistmaker.search.domain.models.Track
 
-class HistoryListInteractorImpl(private val historyTrackRepositorySH: HistoryTrackRepositorySH?):
+class TrackHistoryInteractorImpl(private val historyTrackRepositorySH: HistoryTrackRepositorySH?):
     TrackHistoryInteractor {
 
     private val historyList: ArrayList<Track> = ArrayList(historyTrackRepositorySH?.getTrackListFromSH()?.toList())

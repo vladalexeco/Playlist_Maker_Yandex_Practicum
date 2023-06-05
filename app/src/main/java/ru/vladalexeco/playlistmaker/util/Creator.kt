@@ -1,6 +1,16 @@
 package ru.vladalexeco.playlistmaker.util
 
 import android.content.Context
+import ru.vladalexeco.playlistmaker.search.data.network.RetrofitNetworkClient
+import ru.vladalexeco.playlistmaker.search.data.repository.HistoryTrackRepositorySHImpl
+import ru.vladalexeco.playlistmaker.search.data.repository.TracksRepositoryImpl
+import ru.vladalexeco.playlistmaker.search.data.storage.TrackSearchHistoryStorageSharedPrefs
+import ru.vladalexeco.playlistmaker.search.domain.interactors.TrackHistoryInteractorImpl
+import ru.vladalexeco.playlistmaker.search.domain.interactors.TracksInteractorImpl
+import ru.vladalexeco.playlistmaker.search.domain.interfaces.HistoryTrackRepositorySH
+import ru.vladalexeco.playlistmaker.search.domain.interfaces.TrackHistoryInteractor
+import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksInteractor
+import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksRepository
 import ru.vladalexeco.playlistmaker.settings.data.repository.ThemeStateRepositoryImpl
 import ru.vladalexeco.playlistmaker.settings.data.storage.ThemeStateStorageSharedPrefs
 import ru.vladalexeco.playlistmaker.settings.domain.interactors.ThemeStateInteractorImpl
@@ -13,6 +23,8 @@ import ru.vladalexeco.playlistmaker.sharing.domain.interfaces.StringStorageInter
 import ru.vladalexeco.playlistmaker.sharing.domain.interfaces.StringStorageRepository
 
 object Creator {
+
+    //    settings/sharing
 
     private fun getThemeStateRepository(context: Context): ThemeStateRepository {
         return ThemeStateRepositoryImpl(ThemeStateStorageSharedPrefs(context))
@@ -30,4 +42,26 @@ object Creator {
         return StringStorageInteractorImpl(getStringStorageRepository(context))
     }
 
+    //    *settings/sharing
+
+
+    //    search
+
+    private fun getTracksRepository(context: Context): TracksRepository {
+        return TracksRepositoryImpl(RetrofitNetworkClient(context))
+    }
+
+    fun provideTracksInteractor(context: Context): TracksInteractor {
+        return TracksInteractorImpl(getTracksRepository(context))
+    }
+
+    private fun getHistoryTrackRepositorySH(context: Context): HistoryTrackRepositorySH {
+        return HistoryTrackRepositorySHImpl(TrackSearchHistoryStorageSharedPrefs(context))
+    }
+
+    fun provideTrackHistoryInteractor(context: Context): TrackHistoryInteractor {
+        return TrackHistoryInteractorImpl(getHistoryTrackRepositorySH(context))
+    }
+
+    //    *search
 }

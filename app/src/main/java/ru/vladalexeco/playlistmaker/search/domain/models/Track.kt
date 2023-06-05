@@ -1,4 +1,4 @@
-package ru.vladalexeco.playlistmaker.domain.models
+package ru.vladalexeco.playlistmaker.search.domain.models
 
 import com.google.gson.annotations.SerializedName
 

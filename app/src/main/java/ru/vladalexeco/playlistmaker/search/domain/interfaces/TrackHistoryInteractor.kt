@@ -1,6 +1,6 @@
-package ru.vladalexeco.playlistmaker.domain.interfaces
+package ru.vladalexeco.playlistmaker.search.domain.interfaces
 
-import ru.vladalexeco.playlistmaker.domain.models.Track
+import ru.vladalexeco.playlistmaker.search.domain.models.Track
 
 interface TrackHistoryInteractor {
     fun getHistoryList(): ArrayList<Track>
