@@ -1,6 +1,6 @@
-package ru.vladalexeco.playlistmaker.domain.interfaces
+package ru.vladalexeco.playlistmaker.player.domain.interfaces
 
-import ru.vladalexeco.playlistmaker.domain.models.TrackUrl
+import ru.vladalexeco.playlistmaker.player.domain.models.TrackUrl
 
 interface AudioPlayerRepository {
     fun play()

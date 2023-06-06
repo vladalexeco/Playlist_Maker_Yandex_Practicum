@@ -1,6 +1,11 @@
 package ru.vladalexeco.playlistmaker.util
 
 import android.content.Context
+import ru.vladalexeco.playlistmaker.player.data.repository.AudioPlayerRepositoryImpl
+import ru.vladalexeco.playlistmaker.player.domain.interactors.AudioPlayerInteractorImpl
+import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerInteractor
+import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerRepository
+import ru.vladalexeco.playlistmaker.player.domain.models.TrackUrl
 import ru.vladalexeco.playlistmaker.search.data.network.RetrofitNetworkClient
 import ru.vladalexeco.playlistmaker.search.data.repository.HistoryTrackRepositorySHImpl
 import ru.vladalexeco.playlistmaker.search.data.repository.TracksRepositoryImpl
@@ -64,4 +69,17 @@ object Creator {
     }
 
     //    *search
+
+
+    //    player
+
+    private fun getAudioPlayerRepository(): AudioPlayerRepository {
+        return AudioPlayerRepositoryImpl()
+    }
+
+    fun provideAudioPlayerInteractor(trackUrl: TrackUrl): AudioPlayerInteractor {
+        return AudioPlayerInteractorImpl(trackUrl, getAudioPlayerRepository())
+    }
+
+    //    *player
 }

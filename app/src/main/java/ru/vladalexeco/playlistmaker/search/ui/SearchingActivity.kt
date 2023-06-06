@@ -26,7 +26,7 @@ import com.google.gson.Gson
 import ru.vladalexeco.playlistmaker.*
 import ru.vladalexeco.playlistmaker.search.data.dto.ServerResponse
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
-import ru.vladalexeco.playlistmaker.presentation.ui.PlayerActivity
+import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModelFactory
 import ru.vladalexeco.playlistmaker.search.ui.models.TracksState

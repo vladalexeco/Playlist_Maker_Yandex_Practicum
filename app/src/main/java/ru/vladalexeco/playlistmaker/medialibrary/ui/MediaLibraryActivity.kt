@@ -1,4 +1,4 @@
-package ru.vladalexeco.playlistmaker.presentation.ui
+package ru.vladalexeco.playlistmaker.medialibrary.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

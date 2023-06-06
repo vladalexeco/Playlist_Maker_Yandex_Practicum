@@ -1,8 +1,8 @@
-package ru.vladalexeco.playlistmaker.data.repository
+package ru.vladalexeco.playlistmaker.player.data.repository
 
 import android.media.MediaPlayer
-import ru.vladalexeco.playlistmaker.domain.interfaces.AudioPlayerRepository
-import ru.vladalexeco.playlistmaker.domain.models.TrackUrl
+import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerRepository
+import ru.vladalexeco.playlistmaker.player.domain.models.TrackUrl
 
 class AudioPlayerRepositoryImpl: AudioPlayerRepository {
 
