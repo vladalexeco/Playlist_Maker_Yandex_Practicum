@@ -7,12 +7,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.vladalexeco.playlistmaker.search.data.dto.ServerResponse
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TrackHistoryInteractor
-import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksInteractor
+import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchInteractor
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.search.ui.models.TracksState
 
 class SearchingViewModel(
-    val tracksInteractor: TracksInteractor,
+    private val tracksSearchInteractor: TracksSearchInteractor,
     val trackHistoryInteractor: TrackHistoryInteractor
 ): ViewModel() {
 
@@ -52,9 +52,9 @@ class SearchingViewModel(
                 )
             )
 
-            tracksInteractor.searchTracks(
+            tracksSearchInteractor.searchTracks(
                 newSearchText,
-                object : TracksInteractor.TracksConsumer {
+                object : TracksSearchInteractor.TracksConsumer {
                     override fun consume(foundTracks: List<Track>?, errorMessage: ServerResponse?) {
 
                         handler.post {

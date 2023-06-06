@@ -8,14 +8,14 @@ import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerReposito
 import ru.vladalexeco.playlistmaker.player.domain.models.TrackUrl
 import ru.vladalexeco.playlistmaker.search.data.network.RetrofitNetworkClient
 import ru.vladalexeco.playlistmaker.search.data.repository.HistoryTrackRepositorySHImpl
-import ru.vladalexeco.playlistmaker.search.data.repository.TracksRepositoryImpl
+import ru.vladalexeco.playlistmaker.search.data.repository.TracksSearchSearchRepositoryImpl
 import ru.vladalexeco.playlistmaker.search.data.storage.TrackSearchHistoryStorageSharedPrefs
 import ru.vladalexeco.playlistmaker.search.domain.interactors.TrackHistoryInteractorImpl
-import ru.vladalexeco.playlistmaker.search.domain.interactors.TracksInteractorImpl
+import ru.vladalexeco.playlistmaker.search.domain.interactors.TracksSearchSearchInteractorImpl
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.HistoryTrackRepositorySH
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TrackHistoryInteractor
-import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksInteractor
-import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksRepository
+import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchInteractor
+import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchRepository
 import ru.vladalexeco.playlistmaker.settings.data.repository.ThemeStateRepositoryImpl
 import ru.vladalexeco.playlistmaker.settings.data.storage.ThemeStateStorageSharedPrefs
 import ru.vladalexeco.playlistmaker.settings.domain.interactors.ThemeStateInteractorImpl
@@ -52,12 +52,12 @@ object Creator {
 
     //    search
 
-    private fun getTracksRepository(context: Context): TracksRepository {
-        return TracksRepositoryImpl(RetrofitNetworkClient(context))
+    private fun getTracksSearchRepository(context: Context): TracksSearchRepository {
+        return TracksSearchSearchRepositoryImpl(RetrofitNetworkClient(context))
     }
 
-    fun provideTracksInteractor(context: Context): TracksInteractor {
-        return TracksInteractorImpl(getTracksRepository(context))
+    fun provideTracksSearchInteractor(context: Context): TracksSearchInteractor {
+        return TracksSearchSearchInteractorImpl(getTracksSearchRepository(context))
     }
 
     private fun getHistoryTrackRepositorySH(context: Context): HistoryTrackRepositorySH {

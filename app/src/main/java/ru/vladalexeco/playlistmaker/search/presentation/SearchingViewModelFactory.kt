@@ -7,7 +7,7 @@ import ru.vladalexeco.playlistmaker.util.Creator
 
 class SearchingViewModelFactory(context: Context): ViewModelProvider.Factory {
 
-    private val tracksInteractor = Creator.provideTracksInteractor(context)
+    private val tracksInteractor = Creator.provideTracksSearchInteractor(context)
     private val trackHistoryInteractor = Creator.provideTrackHistoryInteractor(context)
 
     @Suppress("UNCHECKED_CAST")

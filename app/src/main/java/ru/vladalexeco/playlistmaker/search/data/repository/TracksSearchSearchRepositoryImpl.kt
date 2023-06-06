@@ -3,12 +3,12 @@ package ru.vladalexeco.playlistmaker.search.data.repository
 import ru.vladalexeco.playlistmaker.search.data.dto.TrackSearchRequest
 import ru.vladalexeco.playlistmaker.search.data.dto.TrackSearchResponse
 import ru.vladalexeco.playlistmaker.search.data.network.NetworkClient
-import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksRepository
+import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchRepository
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.util.Resource
 import ru.vladalexeco.playlistmaker.search.data.dto.ServerResponse
 
-class TracksRepositoryImpl(private val networkClient: NetworkClient): TracksRepository {
+class TracksSearchSearchRepositoryImpl(private val networkClient: NetworkClient): TracksSearchRepository {
 
     override fun searchTracks(expression: String): Resource<List<Track>> {
         val response = networkClient.doRequest(TrackSearchRequest(expression))
