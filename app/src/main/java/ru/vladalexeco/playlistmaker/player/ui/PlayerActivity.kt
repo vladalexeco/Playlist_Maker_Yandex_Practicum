@@ -1,5 +1,7 @@
 package ru.vladalexeco.playlistmaker.player.ui
 
+import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageButton
@@ -8,15 +10,15 @@ import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.google.gson.Gson
 import ru.vladalexeco.playlistmaker.R
+import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
-import ru.vladalexeco.playlistmaker.player.domain.models.TrackUrl
 import ru.vladalexeco.playlistmaker.player.presentation.PlayerViewModel
 import ru.vladalexeco.playlistmaker.player.presentation.PlayerViewModelFactory
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PAUSED
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PLAYING
 import ru.vladalexeco.playlistmaker.search.ui.KEY_FOR_PLAYER
+import java.io.Serializable
 
 class  PlayerActivity : AppCompatActivity() {
 
@@ -58,59 +60,33 @@ class  PlayerActivity : AppCompatActivity() {
             viewModel.playbackControl()
         }
 
-        val value: String? = intent.getStringExtra(KEY_FOR_PLAYER)
-        val track = Gson().fromJson(value, Track::class.java)
+        val track = intent.getSerializable(KEY_FOR_PLAYER, Track::class.java)
 
-        if (track != null) {
+        viewModel = ViewModelProvider(this, PlayerViewModelFactory(convertTrackToPlayerTrack(track)))[PlayerViewModel::class.java]
 
-            val url = track.previewUrl
 
-            viewModel = ViewModelProvider(this, PlayerViewModelFactory(TrackUrl(url)))[PlayerViewModel::class.java]
+        viewModel.playerTrackForRender.observe(this) { playerTrack ->
+            render(playerTrack)
+        }
 
-            val formattedTime = viewModel.getTimeFormat(track.trackTime.toLong())
-            val artworkHiResolution = track.artworkUrl.replaceAfterLast('/', "512x512bb.jpg")
+        viewModel.playerState.observe(this) { statePlaying ->
 
-            Glide.with(this)
-                .load(artworkHiResolution)
-                .placeholder(R.drawable.track_placeholder_max)
-                .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.corner_radius)))
-                .into(coverImage)
-
-            trackName.text = track.trackName
-            artistName.text = track.artistName
-            duration.text = formattedTime
-
-            if (track.collectionName != null && track.collectionName.isNotEmpty()) {
-                collectionName.text = track.collectionName
-            } else {
-                collectionName.text = "n/a"
+            when (statePlaying) {
+                STATE_PLAYING -> playButton.setImageResource(R.drawable.pause_button)
+                STATE_PAUSED -> playButton.setImageResource(R.drawable.play_button)
             }
 
-            year.text = track.releaseDate.split("-", limit=2)[0]
-            genre.text = track.primaryGenreName
-            country.text = track.country
+        }
 
-
-            viewModel.playerState.observe(this) { statePlaying ->
-
-                when (statePlaying) {
-                    STATE_PLAYING -> playButton.setImageResource(R.drawable.pause_button)
-                    STATE_PAUSED -> playButton.setImageResource(R.drawable.play_button)
-                }
-
+        viewModel.isCompleted.observe(this) { isCompleted ->
+            if (isCompleted) {
+                durationInTime.text = getString(R.string.initial_time)
+                playButton.setImageResource(R.drawable.play_button)
             }
+        }
 
-            viewModel.isCompleted.observe(this) { isCompleted ->
-                if (isCompleted) {
-                    durationInTime.text = getString(R.string.initial_time)
-                    playButton.setImageResource(R.drawable.play_button)
-                }
-            }
-
-            viewModel.formattedTime.observe(this) { trackTime ->
-                durationInTime.text = trackTime
-            }
-
+        viewModel.formattedTime.observe(this) { trackTime ->
+            durationInTime.text = trackTime
         }
 
     }
@@ -125,6 +101,51 @@ class  PlayerActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
+
+    fun <T : Serializable?> Intent.getSerializable(key: String, m_class: Class<T>): T {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            this.getSerializableExtra(key, m_class)!!
+        else
+            this.getSerializableExtra(key) as T
+    }
+
+    private fun convertTrackToPlayerTrack(track: Track): PlayerTrack {
+        return PlayerTrack(
+            trackId = track.trackId,
+            trackName = track.trackName,
+            artistName = track.artistName,
+            trackTime = track.trackTime,
+            artworkUrl = track.artworkUrl,
+            collectionName = track.collectionName,
+            releaseDate = track.releaseDate,
+            primaryGenreName = track.primaryGenreName,
+            country = track.country,
+            previewUrl = track.previewUrl
+        )
+    }
+
+    private fun render(track: PlayerTrack) {
+        val formattedTime = viewModel.getTimeFormat(track.trackTime.toLong())
+        trackName.text = track.trackName
+        artistName.text = track.artistName
+        duration.text = formattedTime
+
+        if (!track.collectionName.isNullOrEmpty()) {
+            collectionName.text = track.collectionName
+        } else {
+            collectionName.text = getString(R.string.unknown)
+        }
+
+        year.text = track.releaseDate
+        genre.text = track.primaryGenreName
+        country.text = track.country
+
+        Glide.with(this)
+            .load(track.artworkUrl)
+            .placeholder(R.drawable.track_placeholder_max)
+            .transform(RoundedCorners(resources.getDimensionPixelSize(R.dimen.corner_radius)))
+            .into(coverImage)
+    }
 }
 
 

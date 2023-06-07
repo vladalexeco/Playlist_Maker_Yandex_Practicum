@@ -1,10 +1,10 @@
 package ru.vladalexeco.playlistmaker.player.domain.interactors
 
-import ru.vladalexeco.playlistmaker.player.domain.models.TrackUrl
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerInteractor
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerRepository
+import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 
-class AudioPlayerInteractorImpl(private val trackUrl: TrackUrl, private val audioPlayerRepository: AudioPlayerRepository):
+class AudioPlayerInteractorImpl(private val playerTrack: PlayerTrack, private val audioPlayerRepository: AudioPlayerRepository):
     AudioPlayerInteractor {
 
     override fun play() {
@@ -25,7 +25,7 @@ class AudioPlayerInteractorImpl(private val trackUrl: TrackUrl, private val audi
 
     override fun prepare(callbackPrep: () -> Unit, callbackComp: () -> Unit) {
         audioPlayerRepository.prepare(
-            trackUrl = trackUrl,
+            previewUrl = playerTrack.previewUrl,
             callbackOnPrepared = {
                 callbackPrep.invoke()
             },

@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerInteractor
+import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -14,14 +15,18 @@ const val STATE_PREPARED = 1
 const val STATE_PLAYING = 2
 const val STATE_PAUSED = 3
 
-class PlayerViewModel(private val audioPlayerInteractor: AudioPlayerInteractor): ViewModel() {
+class PlayerViewModel(private val playerTrack: PlayerTrack, private val audioPlayerInteractor: AudioPlayerInteractor): ViewModel() {
+
+    private val _playerTrackForRender = MutableLiveData<PlayerTrack>()
+    val playerTrackForRender: LiveData<PlayerTrack> = _playerTrackForRender
 
     init {
         preparePlayer()
+        assignValToPlayerTrackForRender()
     }
 
-    private val mainThreadHandler = Handler(Looper.getMainLooper())
 
+    private val mainThreadHandler = Handler(Looper.getMainLooper())
 
     private val _isCompleted = MutableLiveData<Boolean>(false)
     val isCompleted: LiveData<Boolean> = _isCompleted
@@ -37,6 +42,17 @@ class PlayerViewModel(private val audioPlayerInteractor: AudioPlayerInteractor):
             _formattedTime.postValue(getTimeFormat(audioPlayerInteractor.getCurrentPos().toLong()))
             mainThreadHandler.postDelayed(this, UPDATE_TIME_INFO_MS)
         }
+    }
+
+    private fun assignValToPlayerTrackForRender() {
+        val playerTrackTo = playerTrack.copy(
+            artworkUrl = playerTrack.artworkUrl.replaceAfterLast('/', "512x512bb.jpg"),
+            releaseDate = playerTrack.releaseDate.split("-", limit=2)[0]
+        )
+
+
+
+        _playerTrackForRender.postValue(playerTrackTo)
     }
 
     fun play() {

@@ -1,7 +1,5 @@
 package ru.vladalexeco.playlistmaker.player.domain.interfaces
 
-import ru.vladalexeco.playlistmaker.player.domain.models.TrackUrl
-
 interface AudioPlayerInteractor {
 
     fun play()

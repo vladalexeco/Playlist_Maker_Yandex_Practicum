@@ -2,7 +2,7 @@ package ru.vladalexeco.playlistmaker.player.data.repository
 
 import android.media.MediaPlayer
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerRepository
-import ru.vladalexeco.playlistmaker.player.domain.models.TrackUrl
+
 
 class AudioPlayerRepositoryImpl: AudioPlayerRepository {
 
@@ -24,8 +24,8 @@ class AudioPlayerRepositoryImpl: AudioPlayerRepository {
         return mediaPlayer.currentPosition
     }
 
-    override fun prepare(trackUrl: TrackUrl, callbackOnPrepared: () -> Unit, callbackOnCompletion: () -> Unit) {
-        mediaPlayer.setDataSource(trackUrl.url)
+    override fun prepare(previewUrl: String, callbackOnPrepared: () -> Unit, callbackOnCompletion: () -> Unit) {
+        mediaPlayer.setDataSource(previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {
             callbackOnPrepared.invoke()

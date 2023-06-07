@@ -6,7 +6,7 @@ import ru.vladalexeco.playlistmaker.search.data.network.NetworkClient
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchRepository
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.util.Resource
-import ru.vladalexeco.playlistmaker.search.data.dto.ServerResponse
+import ru.vladalexeco.playlistmaker.util.ServerResponse
 
 class TracksSearchSearchRepositoryImpl(private val networkClient: NetworkClient): TracksSearchRepository {
 

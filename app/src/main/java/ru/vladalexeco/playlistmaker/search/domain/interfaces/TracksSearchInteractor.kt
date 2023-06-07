@@ -1,7 +1,7 @@
 package ru.vladalexeco.playlistmaker.search.domain.interfaces
 
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
-import ru.vladalexeco.playlistmaker.search.data.dto.ServerResponse
+import ru.vladalexeco.playlistmaker.util.ServerResponse
 
 interface TracksSearchInteractor {
 

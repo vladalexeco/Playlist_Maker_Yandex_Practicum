@@ -5,7 +5,7 @@ import ru.vladalexeco.playlistmaker.player.data.repository.AudioPlayerRepository
 import ru.vladalexeco.playlistmaker.player.domain.interactors.AudioPlayerInteractorImpl
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerInteractor
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerRepository
-import ru.vladalexeco.playlistmaker.player.domain.models.TrackUrl
+import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 import ru.vladalexeco.playlistmaker.search.data.network.RetrofitNetworkClient
 import ru.vladalexeco.playlistmaker.search.data.repository.HistoryTrackRepositorySHImpl
 import ru.vladalexeco.playlistmaker.search.data.repository.TracksSearchSearchRepositoryImpl
@@ -77,8 +77,8 @@ object Creator {
         return AudioPlayerRepositoryImpl()
     }
 
-    fun provideAudioPlayerInteractor(trackUrl: TrackUrl): AudioPlayerInteractor {
-        return AudioPlayerInteractorImpl(trackUrl, getAudioPlayerRepository())
+    fun provideAudioPlayerInteractor(playerTrack: PlayerTrack): AudioPlayerInteractor {
+        return AudioPlayerInteractorImpl(playerTrack, getAudioPlayerRepository())
     }
 
     //    *player

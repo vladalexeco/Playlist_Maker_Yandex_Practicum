@@ -22,9 +22,8 @@ import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import ru.vladalexeco.playlistmaker.*
-import ru.vladalexeco.playlistmaker.search.data.dto.ServerResponse
+import ru.vladalexeco.playlistmaker.util.ServerResponse
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
@@ -94,7 +93,10 @@ class SearchingActivity : AppCompatActivity() {
         historyRecyclerView = findViewById(R.id.history_recycle_view)
         historyRecyclerView.layoutManager = LinearLayoutManager(this)
         historyRecyclerView.adapter = historyAdapter
-        historyAdapter.tracks = viewModel.trackHistoryInteractor.getHistoryList()
+
+        viewModel.historyList.observe(this) { historyList ->
+            historyAdapter.tracks = historyList
+        }
 
         inputEditText = findViewById(R.id.inputEditText)
         clearButton = findViewById(R.id.clearIcon)
@@ -108,14 +110,15 @@ class SearchingActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
 
         clearHistoryButton.setOnClickListener {
-            viewModel.trackHistoryInteractor.clearHistoryList()
+//            viewModel.trackHistoryInteractor.clearHistoryList()
+            viewModel.clearHistoryList()
             adapter.notifyDataSetChanged()
             historyWidget.visibility = View.GONE
         }
 
         // On Focus Actions
         inputEditText.setOnFocusChangeListener { view, hasFocus ->
-            historyWidget.visibility = if (hasFocus && inputEditText.text.isEmpty() && viewModel.trackHistoryInteractor.getHistoryList().isNotEmpty()) View.VISIBLE else View.GONE
+            historyWidget.visibility = if (hasFocus && inputEditText.text.isEmpty() && viewModel.getHistoryList().isNotEmpty()) View.VISIBLE else View.GONE
         }
 
         clearButton.setOnClickListener {
@@ -143,7 +146,7 @@ class SearchingActivity : AppCompatActivity() {
                 textFromSearchWidget = inputEditText.text.toString()
 
                 // On Focus Actions
-                historyWidget.visibility = if (inputEditText.hasFocus() && s?.isEmpty() == true && viewModel.trackHistoryInteractor.getHistoryList().isNotEmpty()) View.VISIBLE else View.GONE
+                historyWidget.visibility = if (inputEditText.hasFocus() && s?.isEmpty() == true && viewModel.getHistoryList().isNotEmpty()) View.VISIBLE else View.GONE
 
                 viewModel.searchDebounce(
                     changedText = s?.toString() ?: ""
@@ -168,7 +171,7 @@ class SearchingActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        viewModel.trackHistoryInteractor.saveHistoryList()
+        viewModel.saveHistoryList()
     }
 
     override fun onDestroy() {
@@ -195,19 +198,17 @@ class SearchingActivity : AppCompatActivity() {
     }
 
     private fun clickToTrackList(track: Track) {
-        viewModel.trackHistoryInteractor.addTrackToHistoryList(track)
+        viewModel.addTrackToHistoryList(track)
         historyAdapter.notifyDataSetChanged()
 
-        val json = Gson().toJson(track)
         val intent = Intent(this, PlayerActivity::class.java)
-        intent.putExtra(KEY_FOR_PLAYER, json)
+        intent.putExtra(KEY_FOR_PLAYER, track)
         startActivity(intent)
     }
 
     private fun clickToHistoryTrackList(track: Track) {
-        val json = Gson().toJson(track)
         val intent = Intent(this, PlayerActivity::class.java)
-        intent.putExtra(KEY_FOR_PLAYER, json)
+        intent.putExtra(KEY_FOR_PLAYER, track)
         startActivity(intent)
     }
 

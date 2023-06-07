@@ -1,4 +1,4 @@
-package ru.vladalexeco.playlistmaker.search.data.dto
+package ru.vladalexeco.playlistmaker.util
 
 enum class ServerResponse {
     SUCCESS, FAILED, DISCONNECT, EMPTY

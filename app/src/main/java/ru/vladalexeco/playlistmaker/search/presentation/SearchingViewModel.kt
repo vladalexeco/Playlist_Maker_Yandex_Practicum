@@ -5,7 +5,7 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ru.vladalexeco.playlistmaker.search.data.dto.ServerResponse
+import ru.vladalexeco.playlistmaker.util.ServerResponse
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TrackHistoryInteractor
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchInteractor
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
@@ -13,8 +13,15 @@ import ru.vladalexeco.playlistmaker.search.ui.models.TracksState
 
 class SearchingViewModel(
     private val tracksSearchInteractor: TracksSearchInteractor,
-    val trackHistoryInteractor: TrackHistoryInteractor
+    private val trackHistoryInteractor: TrackHistoryInteractor
 ): ViewModel() {
+
+    private val _historyList = MutableLiveData<ArrayList<Track>>()
+    val historyList: LiveData<ArrayList<Track>> = _historyList
+
+    init {
+        assignListToHistoryList()
+    }
 
     private val _tracksState = MutableLiveData<TracksState>()
     val tracksState: LiveData<TracksState> = _tracksState
@@ -28,6 +35,31 @@ class SearchingViewModel(
     private val searchRunnable = Runnable {
         val newSearchText = lastSearchText ?: ""
         searchRequest(newSearchText)
+    }
+
+    private fun assignListToHistoryList() {
+        val hList = getHistoryList()
+        _historyList.postValue(hList)
+    }
+
+    fun getHistoryList(): ArrayList<Track> {
+        return trackHistoryInteractor.getHistoryList()
+    }
+
+    fun clearHistoryList() {
+        trackHistoryInteractor.clearHistoryList()
+        val hList = getHistoryList()
+        _historyList.postValue(hList)
+    }
+
+    fun saveHistoryList() {
+        trackHistoryInteractor.saveHistoryList()
+    }
+
+    fun addTrackToHistoryList(track: Track) {
+        trackHistoryInteractor.addTrackToHistoryList(track)
+        val hList = getHistoryList()
+        _historyList.postValue(hList)
     }
 
     fun onDestroy() {

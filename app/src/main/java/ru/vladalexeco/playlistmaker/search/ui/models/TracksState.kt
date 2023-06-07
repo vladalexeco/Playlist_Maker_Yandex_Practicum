@@ -1,6 +1,6 @@
 package ru.vladalexeco.playlistmaker.search.ui.models
 
-import ru.vladalexeco.playlistmaker.search.data.dto.ServerResponse
+import ru.vladalexeco.playlistmaker.util.ServerResponse
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 
 data class TracksState(
