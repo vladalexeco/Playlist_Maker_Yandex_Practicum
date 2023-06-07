@@ -47,7 +47,8 @@ class PlayerViewModel(private val playerTrack: PlayerTrack, private val audioPla
     private fun assignValToPlayerTrackForRender() {
         val playerTrackTo = playerTrack.copy(
             artworkUrl = playerTrack.artworkUrl.replaceAfterLast('/', "512x512bb.jpg"),
-            releaseDate = playerTrack.releaseDate.split("-", limit=2)[0]
+            releaseDate = playerTrack.releaseDate.split("-", limit=2)[0],
+            trackTime = getTimeFormat(playerTrack.trackTime.toLong())
         )
 
 

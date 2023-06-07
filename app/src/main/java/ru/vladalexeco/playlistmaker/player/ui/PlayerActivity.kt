@@ -125,10 +125,9 @@ class  PlayerActivity : AppCompatActivity() {
     }
 
     private fun render(track: PlayerTrack) {
-        val formattedTime = viewModel.getTimeFormat(track.trackTime.toLong())
         trackName.text = track.trackName
         artistName.text = track.artistName
-        duration.text = formattedTime
+        duration.text = track.trackTime
 
         if (!track.collectionName.isNullOrEmpty()) {
             collectionName.text = track.collectionName
