@@ -9,7 +9,6 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -23,7 +22,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.vladalexeco.playlistmaker.*
-import ru.vladalexeco.playlistmaker.util.ServerResponse
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
@@ -250,29 +248,23 @@ class SearchingActivity : AppCompatActivity() {
 
                 showLoading(false)
 
-                when (tracksState.serverResponse) {
+                if (tracksState.isFailed != null) {
 
-                    ServerResponse.SUCCESS -> {
-                        adapter.tracks.clear()
-                        adapter.tracks.addAll(tracksState.tracks)
-                        adapter.notifyDataSetChanged()
-                        showPlaceholder(null)
+                    when {
+                        tracksState.isFailed -> showPlaceholder(false, getString(R.string.server_error))
+                        else -> showPlaceholder(false, getString(R.string.bad_connection))
                     }
 
-                    ServerResponse.EMPTY -> {
-                        showPlaceholder(true)
-                    }
+                } else {
 
-                    ServerResponse.DISCONNECT -> {
-                        showPlaceholder(false, getString(R.string.bad_connection))
-                    }
-
-                    ServerResponse.FAILED -> {
-                        showPlaceholder(false, getString(R.string.server_error))
-                    }
-
-                    else -> {
-                        Log.d("SERVER", "Something went wrong")
+                    when {
+                        tracksState.tracks.isEmpty() -> showPlaceholder(true)
+                        else -> {
+                            adapter.tracks.clear()
+                            adapter.tracks.addAll(tracksState.tracks)
+                            adapter.notifyDataSetChanged()
+                            showPlaceholder(null)
+                        }
                     }
 
                 }

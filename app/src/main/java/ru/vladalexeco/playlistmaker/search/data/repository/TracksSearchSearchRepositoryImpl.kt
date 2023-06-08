@@ -6,7 +6,6 @@ import ru.vladalexeco.playlistmaker.search.data.network.NetworkClient
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchRepository
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.util.Resource
-import ru.vladalexeco.playlistmaker.util.ServerResponse
 
 class TracksSearchSearchRepositoryImpl(private val networkClient: NetworkClient): TracksSearchRepository {
 
@@ -15,7 +14,7 @@ class TracksSearchSearchRepositoryImpl(private val networkClient: NetworkClient)
 
         return when (response.resultCode) {
             -1 -> {
-                Resource.Error(ServerResponse.DISCONNECT)
+                Resource.Error(isFailed = false)
             }
             200 -> {
                 Resource.Success((response as TrackSearchResponse).tracks.map {
@@ -33,7 +32,7 @@ class TracksSearchSearchRepositoryImpl(private val networkClient: NetworkClient)
                     )})
             }
             else -> {
-                Resource.Error(ServerResponse.FAILED)
+                Resource.Error(isFailed = true)
             }
         }
     }

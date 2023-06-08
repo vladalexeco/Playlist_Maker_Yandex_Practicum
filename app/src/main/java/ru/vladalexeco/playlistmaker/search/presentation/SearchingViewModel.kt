@@ -5,7 +5,6 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ru.vladalexeco.playlistmaker.util.ServerResponse
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TrackHistoryInteractor
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchInteractor
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
@@ -80,14 +79,14 @@ class SearchingViewModel(
                 TracksState(
                     tracks = tracks,
                     isLoading = true,
-                    serverResponse = null
+                    isFailed = null
                 )
             )
 
             tracksSearchInteractor.searchTracks(
                 newSearchText,
                 object : TracksSearchInteractor.TracksConsumer {
-                    override fun consume(foundTracks: List<Track>?, errorMessage: ServerResponse?) {
+                    override fun consume(foundTracks: List<Track>?, isFailed: Boolean?) {
 
                         handler.post {
 
@@ -96,36 +95,37 @@ class SearchingViewModel(
                                 tracks.addAll(foundTracks)
                             }
 
-                            when {
-                                errorMessage != null -> {
+
+                            if (isFailed != null) {
+
+                                _tracksState.postValue(
+                                    TracksState(
+                                        tracks = emptyList(),
+                                        isLoading = false,
+                                        isFailed = isFailed
+                                    )
+                                )
+
+                            } else {
+
+                                if (tracks.isEmpty()) {
                                     _tracksState.postValue(
                                         TracksState(
                                             tracks = emptyList(),
                                             isLoading = false,
-                                            serverResponse = errorMessage
+                                            isFailed = null
                                         )
                                     )
-                                }
-
-                                tracks.isEmpty() -> {
-                                    _tracksState.postValue(
-                                        TracksState(
-                                            tracks = emptyList(),
-                                            isLoading = false,
-                                            serverResponse = ServerResponse.EMPTY
-                                        )
-                                    )
-                                }
-
-                                else -> {
+                                } else {
                                     _tracksState.postValue(
                                         TracksState(
                                             tracks = tracks,
                                             isLoading = false,
-                                            serverResponse = ServerResponse.SUCCESS
+                                            isFailed = null
                                         )
                                     )
                                 }
+
                             }
                         }
                     }
