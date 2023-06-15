@@ -10,6 +10,8 @@ import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
@@ -34,7 +36,11 @@ class  PlayerActivity : AppCompatActivity() {
     private lateinit var playButton: ImageButton
     private lateinit var durationInTime: TextView
 
-    private lateinit var viewModel: PlayerViewModel
+    private lateinit var playerTrack: PlayerTrack
+
+    private val viewModel: PlayerViewModel by viewModel {
+        parametersOf(playerTrack)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +68,9 @@ class  PlayerActivity : AppCompatActivity() {
 
         val track = intent.getSerializable(KEY_FOR_PLAYER, Track::class.java)
 
-        viewModel = ViewModelProvider(this, PlayerViewModelFactory(convertTrackToPlayerTrack(track)))[PlayerViewModel::class.java]
+        playerTrack = convertTrackToPlayerTrack(track)
+
+//        viewModel = ViewModelProvider(this, PlayerViewModelFactory(convertTrackToPlayerTrack(track)))[PlayerViewModel::class.java]
 
 
         viewModel.playerTrackForRender.observe(this) { playerTrack ->

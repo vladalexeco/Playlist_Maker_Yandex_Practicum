@@ -9,16 +9,16 @@ import ru.vladalexeco.playlistmaker.search.data.dto.Response
 import ru.vladalexeco.playlistmaker.search.data.dto.TrackSearchRequest
 import ru.vladalexeco.playlistmaker.search.data.dto.TrackSearchResponse
 
-class RetrofitNetworkClient(private val context: Context): NetworkClient {
+class RetrofitNetworkClient(private val context: Context, private val trackService: ITunesApi): NetworkClient {
 
-    private val baseUrl = "http://itunes.apple.com"
+//    private val baseUrl = "http://itunes.apple.com"
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(baseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+//    private val retrofit = Retrofit.Builder()
+//        .baseUrl(baseUrl)
+//        .addConverterFactory(GsonConverterFactory.create())
+//        .build()
 
-    private val trackService = retrofit.create(ITunesApi::class.java)
+//    private val trackService = retrofit.create(ITunesApi::class.java)
 
     override fun doRequest(dto: Any): Response {
         if (!isConnected()) {

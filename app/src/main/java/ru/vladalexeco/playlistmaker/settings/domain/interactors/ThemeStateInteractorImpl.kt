@@ -3,7 +3,7 @@ package ru.vladalexeco.playlistmaker.settings.domain.interactors
 import ru.vladalexeco.playlistmaker.settings.domain.interfaces.ThemeStateInteractor
 import ru.vladalexeco.playlistmaker.settings.domain.interfaces.ThemeStateRepository
 
-class ThemeStateInteractorImpl(val themeStateRepository: ThemeStateRepository): ThemeStateInteractor {
+class ThemeStateInteractorImpl(private val themeStateRepository: ThemeStateRepository): ThemeStateInteractor {
 
     override fun getThemeState(): Boolean {
         return themeStateRepository.getThemeStateData()

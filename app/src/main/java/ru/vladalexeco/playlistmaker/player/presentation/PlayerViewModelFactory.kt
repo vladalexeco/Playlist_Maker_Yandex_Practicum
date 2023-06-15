@@ -7,9 +7,9 @@ import ru.vladalexeco.playlistmaker.util.Creator
 
 class PlayerViewModelFactory(private val playerTrack: PlayerTrack): ViewModelProvider.Factory {
 
-    private val audioPlayerInteractor = Creator.provideAudioPlayerInteractor(playerTrack)
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return PlayerViewModel(playerTrack, audioPlayerInteractor) as T
-    }
+//    private val audioPlayerInteractor = Creator.provideAudioPlayerInteractor(playerTrack)
+//
+//    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//        return PlayerViewModel(playerTrack, audioPlayerInteractor) as T
+//    }
 }

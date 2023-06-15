@@ -29,57 +29,57 @@ import ru.vladalexeco.playlistmaker.sharing.domain.interfaces.StringStorageRepos
 
 object Creator {
 
-    //    settings/sharing
-
-    private fun getThemeStateRepository(context: Context): ThemeStateRepository {
-        return ThemeStateRepositoryImpl(ThemeStateStorageSharedPrefs(context))
-    }
-
-    fun provideThemeStateInteractor(context: Context): ThemeStateInteractor {
-        return ThemeStateInteractorImpl(getThemeStateRepository(context))
-    }
-
-    private fun getStringStorageRepository(context: Context): StringStorageRepository {
-        return StringStorageRepositoryImpl(StringStorageFromSystemResources(context))
-    }
-
-    fun provideStringStorageInteractor(context: Context): StringStorageInteractor {
-        return StringStorageInteractorImpl(getStringStorageRepository(context))
-    }
-
-    //    *settings/sharing
-
-
-    //    search
-
-    private fun getTracksSearchRepository(context: Context): TracksSearchRepository {
-        return TracksSearchSearchRepositoryImpl(RetrofitNetworkClient(context))
-    }
-
-    fun provideTracksSearchInteractor(context: Context): TracksSearchInteractor {
-        return TracksSearchSearchInteractorImpl(getTracksSearchRepository(context))
-    }
-
-    private fun getHistoryTrackRepositorySH(context: Context): HistoryTrackRepositorySH {
-        return HistoryTrackRepositorySHImpl(TrackSearchHistoryStorageSharedPrefs(context))
-    }
-
-    fun provideTrackHistoryInteractor(context: Context): TrackHistoryInteractor {
-        return TrackHistoryInteractorImpl(getHistoryTrackRepositorySH(context))
-    }
-
-    //    *search
-
-
-    //    player
-
-    private fun getAudioPlayerRepository(): AudioPlayerRepository {
-        return AudioPlayerRepositoryImpl()
-    }
-
-    fun provideAudioPlayerInteractor(playerTrack: PlayerTrack): AudioPlayerInteractor {
-        return AudioPlayerInteractorImpl(playerTrack, getAudioPlayerRepository())
-    }
-
-    //    *player
+//    //    settings/sharing
+//
+//    private fun getThemeStateRepository(context: Context): ThemeStateRepository {
+//        return ThemeStateRepositoryImpl(ThemeStateStorageSharedPrefs(context))
+//    }
+//
+//    fun provideThemeStateInteractor(context: Context): ThemeStateInteractor {
+//        return ThemeStateInteractorImpl(getThemeStateRepository(context))
+//    }
+//
+//    private fun getStringStorageRepository(context: Context): StringStorageRepository {
+//        return StringStorageRepositoryImpl(StringStorageFromSystemResources(context))
+//    }
+//
+//    fun provideStringStorageInteractor(context: Context): StringStorageInteractor {
+//        return StringStorageInteractorImpl(getStringStorageRepository(context))
+//    }
+//
+//    //    *settings/sharing
+//
+//
+//    //    search
+//
+//    private fun getTracksSearchRepository(context: Context): TracksSearchRepository {
+//        return TracksSearchSearchRepositoryImpl(RetrofitNetworkClient(context))
+//    }
+//
+//    fun provideTracksSearchInteractor(context: Context): TracksSearchInteractor {
+//        return TracksSearchSearchInteractorImpl(getTracksSearchRepository(context))
+//    }
+//
+//    private fun getHistoryTrackRepositorySH(context: Context): HistoryTrackRepositorySH {
+//        return HistoryTrackRepositorySHImpl(TrackSearchHistoryStorageSharedPrefs(context))
+//    }
+//
+//    fun provideTrackHistoryInteractor(context: Context): TrackHistoryInteractor {
+//        return TrackHistoryInteractorImpl(getHistoryTrackRepositorySH(context))
+//    }
+//
+//    //    *search
+//
+//
+//    //    player
+//
+//    private fun getAudioPlayerRepository(): AudioPlayerRepository {
+//        return AudioPlayerRepositoryImpl()
+//    }
+//
+//    fun provideAudioPlayerInteractor(playerTrack: PlayerTrack): AudioPlayerInteractor {
+//        return AudioPlayerInteractorImpl(playerTrack, getAudioPlayerRepository())
+//    }
+//
+//    //    *player
 }

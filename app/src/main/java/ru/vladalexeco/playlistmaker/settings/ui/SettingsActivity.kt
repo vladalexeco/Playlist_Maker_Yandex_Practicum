@@ -9,6 +9,7 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.switchmaterial.SwitchMaterial
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.App
 import ru.vladalexeco.playlistmaker.KEY_FOR_APP_THEME
@@ -24,14 +25,14 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var agreementFrameLayout: FrameLayout
     private lateinit var themeSwitcher: SwitchMaterial
 
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel()
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        viewModel = ViewModelProvider(this, SettingsViewModelFactory(this))[SettingsViewModel::class.java]
+//        viewModel = ViewModelProvider(this, SettingsViewModelFactory(this))[SettingsViewModel::class.java]
 
         backArrowImageView = findViewById(R.id.backArrowImageView)
         shareAppFrameLayout = findViewById(R.id.shareAppFrameLayout)

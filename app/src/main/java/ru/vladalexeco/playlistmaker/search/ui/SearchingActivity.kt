@@ -21,6 +21,7 @@ import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.*
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
@@ -34,7 +35,7 @@ class SearchingActivity : AppCompatActivity() {
 
     var textFromSearchWidget = ""
 
-    private lateinit var viewModel: SearchingViewModel
+    private val viewModel: SearchingViewModel by viewModel()
 
     companion object {
         const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
@@ -76,7 +77,7 @@ class SearchingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_searching)
 
-        viewModel = ViewModelProvider(this, SearchingViewModelFactory(this))[SearchingViewModel::class.java]
+//        viewModel = ViewModelProvider(this, SearchingViewModelFactory(this))[SearchingViewModel::class.java]
 
         viewModel.tracksState.observe(this) { tracksState ->
             render(tracksState)
