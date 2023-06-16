@@ -18,7 +18,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -26,7 +25,6 @@ import ru.vladalexeco.playlistmaker.*
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
-import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModelFactory
 import ru.vladalexeco.playlistmaker.search.ui.models.TracksState
 
 const val KEY_FOR_PLAYER = "key_for_player"
@@ -77,7 +75,6 @@ class SearchingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_searching)
 
-//        viewModel = ViewModelProvider(this, SearchingViewModelFactory(this))[SearchingViewModel::class.java]
 
         viewModel.tracksState.observe(this) { tracksState ->
             render(tracksState)
@@ -109,7 +106,6 @@ class SearchingActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
 
         clearHistoryButton.setOnClickListener {
-//            viewModel.trackHistoryInteractor.clearHistoryList()
             viewModel.clearHistoryList()
             adapter.notifyDataSetChanged()
             historyWidget.visibility = View.GONE

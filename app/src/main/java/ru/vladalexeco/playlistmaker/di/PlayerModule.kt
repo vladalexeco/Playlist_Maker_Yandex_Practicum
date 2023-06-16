@@ -2,6 +2,7 @@ package ru.vladalexeco.playlistmaker.di
 
 import android.media.MediaPlayer
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 import ru.vladalexeco.playlistmaker.player.data.repository.AudioPlayerRepositoryImpl
 import ru.vladalexeco.playlistmaker.player.domain.interactors.AudioPlayerInteractorImpl
@@ -14,7 +15,7 @@ val playerModule = module {
 
     factory { MediaPlayer() }
 
-    single<AudioPlayerRepository> {
+    factory <AudioPlayerRepository> {
         AudioPlayerRepositoryImpl(mediaPlayer = get())
     }
 
@@ -23,7 +24,7 @@ val playerModule = module {
     }
 
     viewModel { (playerTrack: PlayerTrack) ->
-        PlayerViewModel(playerTrack = playerTrack, audioPlayerInteractor = get())
+        PlayerViewModel(playerTrack = playerTrack, audioPlayerInteractor = get { parametersOf(playerTrack) })
     }
 
 }

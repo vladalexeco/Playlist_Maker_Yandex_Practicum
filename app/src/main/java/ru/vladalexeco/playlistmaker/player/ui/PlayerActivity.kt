@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -16,7 +15,6 @@ import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.player.presentation.PlayerViewModel
-import ru.vladalexeco.playlistmaker.player.presentation.PlayerViewModelFactory
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PAUSED
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PLAYING
 import ru.vladalexeco.playlistmaker.search.ui.KEY_FOR_PLAYER
@@ -69,9 +67,6 @@ class  PlayerActivity : AppCompatActivity() {
         val track = intent.getSerializable(KEY_FOR_PLAYER, Track::class.java)
 
         playerTrack = convertTrackToPlayerTrack(track)
-
-//        viewModel = ViewModelProvider(this, PlayerViewModelFactory(convertTrackToPlayerTrack(track)))[PlayerViewModel::class.java]
-
 
         viewModel.playerTrackForRender.observe(this) { playerTrack ->
             render(playerTrack)

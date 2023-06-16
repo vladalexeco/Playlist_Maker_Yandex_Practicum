@@ -7,15 +7,10 @@ import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.switchmaterial.SwitchMaterial
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.R
-import ru.vladalexeco.playlistmaker.App
-import ru.vladalexeco.playlistmaker.KEY_FOR_APP_THEME
-import ru.vladalexeco.playlistmaker.SHARED_PREFERENCES
 import ru.vladalexeco.playlistmaker.settings.presentation.SettingsViewModel
-import ru.vladalexeco.playlistmaker.settings.presentation.SettingsViewModelFactory
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -32,7 +27,6 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-//        viewModel = ViewModelProvider(this, SettingsViewModelFactory(this))[SettingsViewModel::class.java]
 
         backArrowImageView = findViewById(R.id.backArrowImageView)
         shareAppFrameLayout = findViewById(R.id.shareAppFrameLayout)
