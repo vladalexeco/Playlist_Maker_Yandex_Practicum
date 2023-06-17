@@ -7,4 +7,5 @@ interface TrackHistoryInteractor {
     fun saveHistoryList()
     fun addTrackToHistoryList(track: Track)
     fun clearHistoryList()
+    fun transferToTop(track: Track): Int
 }

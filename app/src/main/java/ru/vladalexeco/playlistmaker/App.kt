@@ -11,6 +11,9 @@ import ru.vladalexeco.playlistmaker.di.sharingModule
 
 const val SHARED_PREFERENCES = "SHARED_PREFERENCES"
 const val KEY_FOR_APP_THEME = "KEY_FOR_APP_THEME"
+const val BASE_URL = "http://itunes.apple.com"
+const val KEY_FOR_HISTORY_LIST = "KEY_FOR_HISTORY_LIST"
+const val KEY_FOR_PLAYER = "KEY_FOR_PLAYER"
 
 
 class App: Application() {

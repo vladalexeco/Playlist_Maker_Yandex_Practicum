@@ -2,7 +2,6 @@ package ru.vladalexeco.playlistmaker.player.presentation
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,7 +21,6 @@ class PlayerViewModel(private val playerTrack: PlayerTrack, private val audioPla
     val playerTrackForRender: LiveData<PlayerTrack> = _playerTrackForRender
 
     init {
-        Log.d("TAGED", "Is created!")
         preparePlayer()
         assignValToPlayerTrackForRender()
     }

@@ -27,7 +27,6 @@ import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
 import ru.vladalexeco.playlistmaker.search.ui.models.TracksState
 
-const val KEY_FOR_PLAYER = "key_for_player"
 
 class SearchingActivity : AppCompatActivity() {
 
@@ -92,6 +91,7 @@ class SearchingActivity : AppCompatActivity() {
 
         viewModel.historyList.observe(this) { historyList ->
             historyAdapter.tracks = historyList
+            historyAdapter.notifyDataSetChanged()
         }
 
         inputEditText = findViewById(R.id.inputEditText)
@@ -107,7 +107,7 @@ class SearchingActivity : AppCompatActivity() {
 
         clearHistoryButton.setOnClickListener {
             viewModel.clearHistoryList()
-            adapter.notifyDataSetChanged()
+            historyAdapter.notifyDataSetChanged()
             historyWidget.visibility = View.GONE
         }
 
@@ -194,7 +194,6 @@ class SearchingActivity : AppCompatActivity() {
 
     private fun clickToTrackList(track: Track) {
         viewModel.addTrackToHistoryList(track)
-        historyAdapter.notifyDataSetChanged()
 
         val intent = Intent(this, PlayerActivity::class.java)
         intent.putExtra(KEY_FOR_PLAYER, track)
@@ -202,6 +201,8 @@ class SearchingActivity : AppCompatActivity() {
     }
 
     private fun clickToHistoryTrackList(track: Track) {
+        viewModel.transferTrackToTop(track)
+
         val intent = Intent(this, PlayerActivity::class.java)
         intent.putExtra(KEY_FOR_PLAYER, track)
         startActivity(intent)

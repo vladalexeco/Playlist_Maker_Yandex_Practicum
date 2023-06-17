@@ -17,7 +17,7 @@ import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.player.presentation.PlayerViewModel
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PAUSED
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PLAYING
-import ru.vladalexeco.playlistmaker.search.ui.KEY_FOR_PLAYER
+import ru.vladalexeco.playlistmaker.KEY_FOR_PLAYER
 import java.io.Serializable
 
 class  PlayerActivity : AppCompatActivity() {

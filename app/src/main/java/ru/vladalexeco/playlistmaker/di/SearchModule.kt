@@ -6,6 +6,8 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.vladalexeco.playlistmaker.BASE_URL
+import ru.vladalexeco.playlistmaker.SHARED_PREFERENCES
 import ru.vladalexeco.playlistmaker.search.data.network.ITunesApi
 import ru.vladalexeco.playlistmaker.search.data.network.NetworkClient
 import ru.vladalexeco.playlistmaker.search.data.network.RetrofitNetworkClient
@@ -21,8 +23,6 @@ import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchInterac
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchRepository
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
 
-const val SHARED_PREFERENCES = "SHARED_PREFERENCES"
-const val BASE_URL = "http://itunes.apple.com"
 
 val searchModule = module {
 
