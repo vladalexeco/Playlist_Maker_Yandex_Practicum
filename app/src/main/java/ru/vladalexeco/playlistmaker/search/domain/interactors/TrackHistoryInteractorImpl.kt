@@ -40,6 +40,15 @@ class TrackHistoryInteractorImpl(private val historyTrackRepositorySH: HistoryTr
         historyList.clear()
     }
 
+    override fun transferToTop(track: Track): Int {
+        val index = historyList.indexOfFirst { it.trackId == track.trackId }
+        if (index != 0) {
+            shiftElementToTopOfHistoryList(index)
+        }
+
+        return index
+    }
+
 
     private fun shiftElementToTopOfHistoryList(index: Int) {
         val trackToMove = historyList[index]

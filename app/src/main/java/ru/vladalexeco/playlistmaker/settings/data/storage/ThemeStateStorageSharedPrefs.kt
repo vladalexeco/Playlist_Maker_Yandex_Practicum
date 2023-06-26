@@ -1,12 +1,9 @@
 package ru.vladalexeco.playlistmaker.settings.data.storage
 
-import android.content.Context
-import ru.vladalexeco.playlistmaker.SHARED_PREFERENCES
+import android.content.SharedPreferences
 import ru.vladalexeco.playlistmaker.KEY_FOR_APP_THEME
 
-class ThemeStateStorageSharedPrefs(context: Context): ThemeStateStorage {
-
-    private val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES, Context.MODE_PRIVATE)
+class ThemeStateStorageSharedPrefs(private val sharedPreferences: SharedPreferences): ThemeStateStorage {
 
     override fun getThemeStateStorage(): Boolean {
         return sharedPreferences.getBoolean(KEY_FOR_APP_THEME, false)

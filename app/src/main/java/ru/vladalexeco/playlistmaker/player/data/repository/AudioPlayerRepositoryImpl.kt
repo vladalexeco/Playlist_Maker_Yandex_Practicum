@@ -4,9 +4,7 @@ import android.media.MediaPlayer
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerRepository
 
 
-class AudioPlayerRepositoryImpl: AudioPlayerRepository {
-
-    private val mediaPlayer = MediaPlayer()
+class AudioPlayerRepositoryImpl(private val mediaPlayer: MediaPlayer): AudioPlayerRepository {
 
     override fun play() {
         mediaPlayer.start()

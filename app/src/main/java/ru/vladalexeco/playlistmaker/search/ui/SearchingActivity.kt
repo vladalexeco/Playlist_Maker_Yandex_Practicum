@@ -18,23 +18,21 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.*
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
-import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModelFactory
 import ru.vladalexeco.playlistmaker.search.ui.models.TracksState
 
-const val KEY_FOR_PLAYER = "key_for_player"
 
 class SearchingActivity : AppCompatActivity() {
 
     var textFromSearchWidget = ""
 
-    private lateinit var viewModel: SearchingViewModel
+    private val viewModel: SearchingViewModel by viewModel()
 
     companion object {
         const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
@@ -76,7 +74,6 @@ class SearchingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_searching)
 
-        viewModel = ViewModelProvider(this, SearchingViewModelFactory(this))[SearchingViewModel::class.java]
 
         viewModel.tracksState.observe(this) { tracksState ->
             render(tracksState)
@@ -94,6 +91,7 @@ class SearchingActivity : AppCompatActivity() {
 
         viewModel.historyList.observe(this) { historyList ->
             historyAdapter.tracks = historyList
+            historyAdapter.notifyDataSetChanged()
         }
 
         inputEditText = findViewById(R.id.inputEditText)
@@ -108,9 +106,8 @@ class SearchingActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
 
         clearHistoryButton.setOnClickListener {
-//            viewModel.trackHistoryInteractor.clearHistoryList()
             viewModel.clearHistoryList()
-            adapter.notifyDataSetChanged()
+            historyAdapter.notifyDataSetChanged()
             historyWidget.visibility = View.GONE
         }
 
@@ -197,7 +194,6 @@ class SearchingActivity : AppCompatActivity() {
 
     private fun clickToTrackList(track: Track) {
         viewModel.addTrackToHistoryList(track)
-        historyAdapter.notifyDataSetChanged()
 
         val intent = Intent(this, PlayerActivity::class.java)
         intent.putExtra(KEY_FOR_PLAYER, track)
@@ -205,6 +201,8 @@ class SearchingActivity : AppCompatActivity() {
     }
 
     private fun clickToHistoryTrackList(track: Track) {
+        viewModel.transferTrackToTop(track)
+
         val intent = Intent(this, PlayerActivity::class.java)
         intent.putExtra(KEY_FOR_PLAYER, track)
         startActivity(intent)
