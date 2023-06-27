@@ -3,7 +3,6 @@
 
     <!--MainActivity-->
     <string name="search">Поиск</string>
-    <string name="media_library">Медиатека</string>
     <string name="settings">Настройки</string>
     <!--/MainActivity-->
 
@@ -34,5 +33,15 @@
     <string name="initial_time">00:00</string>
     <string name="unknown">n/a</string>
     <!--/PlayerActivity-->
+
+
+    <!--Medialibrary-->
+    <string name="media_library">Медиатека</string>
+    <string name="empty_medialibrary">Ваша медиатека пуста</string>
+    <string name="not_create_playlist">Вы не создали \n ни одного плейлиста</string>
+    <string name="new_playlist">Новый плейлист</string>
+    <string name="favourites_tracks">Избранные треки</string>
+    <string name="playlists">Плейлисты</string>
+    <!--/Medialibrary-->
 
 </resources>
