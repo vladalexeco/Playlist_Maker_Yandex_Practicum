@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.databinding.FragmentFavouritesMedialibraryBinding
-import ru.vladalexeco.playlistmaker.medialibrary.presentation.MedialibraryViewModel
+import ru.vladalexeco.playlistmaker.medialibrary.presentation.MedialibraryFavouritesViewModel
 
 class MedialibraryFavouritesFragment : Fragment() {
 
-    private val viewModel: MedialibraryViewModel by viewModel()
+    private val viewModel: MedialibraryFavouritesViewModel by viewModel()
 
     private var _binding: FragmentFavouritesMedialibraryBinding? = null
     private val binding get() = _binding!!
