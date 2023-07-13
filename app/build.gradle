@@ -49,6 +49,11 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation "io.insert-koin:koin-android:3.3.0"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
+
+    implementation "androidx.navigation:navigation-fragment-ktx:2.5.3"
+    implementation "androidx.navigation:navigation-ui-ktx:2.5.3"
+    implementation "androidx.fragment:fragment-ktx:1.5.6"
+
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
