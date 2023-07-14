@@ -10,13 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height">
 
-        <ImageView
-            android:id="@+id/backArrowImageView"
-            style="@style/ImageViewToolbarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/arrow_settings_vector"/>
-
         <TextView
             android:id="@+id/settingsTextView"
             style="@style/TextViewToolbarStyle"

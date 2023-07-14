@@ -2,30 +2,37 @@ package ru.vladalexeco.playlistmaker.search.ui
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.KEY_FOR_PLAYER
 import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.databinding.FragmentSearchBinding
 import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
+import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
 import ru.vladalexeco.playlistmaker.search.ui.models.TracksState
 
 class SearchFragment: Fragment() {
+
+    private var bottomNavigationListener: BottomNavigationListener? = null
 
     private lateinit var binding: FragmentSearchBinding
 
@@ -56,7 +63,6 @@ class SearchFragment: Fragment() {
 
     private lateinit var inputEditText: EditText
     private lateinit var clearButton: ImageView
-    private lateinit var backArrowImageView: ImageView
     private lateinit var recyclerView: RecyclerView
     private lateinit var notFoundWidget: LinearLayout
     private lateinit var badConnectionWidget: LinearLayout
@@ -67,11 +73,28 @@ class SearchFragment: Fragment() {
     private lateinit var clearHistoryButton: Button
     private lateinit var progressBar: ProgressBar
 
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is BottomNavigationListener) {
+            bottomNavigationListener = context
+        } else {
+            throw IllegalArgumentException("Activity must implement BottomNavigationListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        bottomNavigationListener = null
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -81,7 +104,6 @@ class SearchFragment: Fragment() {
 
         inputEditText = binding.inputEditText
         clearButton = binding.clearIcon
-        backArrowImageView = binding.backArrowImageView
         notFoundWidget = binding.notFoundWidget
         badConnectionWidget = binding.badConnectionWidget
         updateButton = binding.updateButton
@@ -135,10 +157,6 @@ class SearchFragment: Fragment() {
             viewModel.searchRequest(inputEditText.text.toString())
         }
 
-        backArrowImageView.setOnClickListener {
-            // листенер не нужен, позже убрать его
-        }
-
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 // some code
@@ -170,6 +188,7 @@ class SearchFragment: Fragment() {
             }
             false
         }
+
     }
 
     override fun onStop() {
@@ -177,9 +196,18 @@ class SearchFragment: Fragment() {
         viewModel.saveHistoryList()
     }
 
+
     override fun onDestroyView() {
         viewModel.onDestroy()
         super.onDestroyView()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (inputEditText.text.toString().isEmpty()) {
+            adapter.tracks.clear()
+            adapter.notifyDataSetChanged()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -275,5 +303,13 @@ class SearchFragment: Fragment() {
 
     private fun showLoading(isLoaded: Boolean) {
         progressBar.visibility = if (isLoaded) View.VISIBLE else View.GONE
+    }
+
+    private fun onKeyboardVisibilityChanged(isVisible: Boolean) {
+        if (isVisible) {
+            bottomNavigationListener?.toggleBottomNavigationViewVisibility(false)
+        } else {
+            bottomNavigationListener?.toggleBottomNavigationViewVisibility(true)
+        }
     }
 }

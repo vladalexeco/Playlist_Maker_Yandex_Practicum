@@ -19,7 +19,6 @@ class SettingsFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsBinding
 
-    private lateinit var backArrowImageView: ImageView
     private lateinit var shareAppFrameLayout: FrameLayout
     private lateinit var supportFrameLayout: FrameLayout
     private lateinit var agreementFrameLayout: FrameLayout
@@ -39,7 +38,6 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        backArrowImageView = binding.backArrowImageView
         shareAppFrameLayout = binding.shareAppFrameLayout
         supportFrameLayout = binding.supportFrameLayout
         agreementFrameLayout = binding.agreementFrameLayout
@@ -78,10 +76,6 @@ class SettingsFragment : Fragment() {
 
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(browserIntent)
-        }
-
-        backArrowImageView.setOnClickListener {
-            // листенер не нужен. удаляем
         }
 
         themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
