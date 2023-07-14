@@ -1,15 +1,71 @@
 package ru.vladalexeco.playlistmaker.search.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.vladalexeco.playlistmaker.KEY_FOR_PLAYER
+import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.databinding.FragmentSearchBinding
+import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
+import ru.vladalexeco.playlistmaker.search.domain.models.Track
+import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
+import ru.vladalexeco.playlistmaker.search.ui.models.TracksState
 
 class SearchFragment: Fragment() {
 
     private lateinit var binding: FragmentSearchBinding
+
+    var textFromSearchWidget = ""
+
+    private val viewModel: SearchingViewModel by viewModel()
+
+    companion object {
+        const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
+    }
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    private var isClickAllowed = true
+
+    private val adapter = TrackAdapter {
+        if (clickDebounce()) {
+            clickToTrackList(it)
+        }
+    }
+
+    private val historyAdapter = TrackAdapter {
+        if (clickDebounce()) {
+            clickToHistoryTrackList(it)
+        }
+    }
+
+    private lateinit var inputEditText: EditText
+    private lateinit var clearButton: ImageView
+    private lateinit var backArrowImageView: ImageView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var notFoundWidget: LinearLayout
+    private lateinit var badConnectionWidget: LinearLayout
+    private lateinit var updateButton: Button
+    private lateinit var badConnectionTextView: TextView
+    private lateinit var historyWidget: LinearLayout
+    private lateinit var historyRecyclerView: RecyclerView
+    private lateinit var clearHistoryButton: Button
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -20,4 +76,204 @@ class SearchFragment: Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        inputEditText = binding.inputEditText
+        clearButton = binding.clearIcon
+        backArrowImageView = binding.backArrowImageView
+        notFoundWidget = binding.notFoundWidget
+        badConnectionWidget = binding.badConnectionWidget
+        updateButton = binding.updateButton
+        badConnectionTextView = binding.badConnection
+        historyWidget = binding.historyWidget
+        clearHistoryButton = binding.clearHistoryButton
+        progressBar = binding.progressBar
+
+        if (savedInstanceState != null) {
+            inputEditText.setText(savedInstanceState.getString(EDIT_TEXT_VALUE, ""))
+        }
+
+        viewModel.tracksState.observe(viewLifecycleOwner) { tracksState ->
+            render(tracksState)
+        }
+
+        val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        recyclerView = binding.recyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = adapter
+
+        historyRecyclerView = binding.historyRecycleView
+        historyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        historyRecyclerView.adapter = historyAdapter
+
+        viewModel.historyList.observe(viewLifecycleOwner) { historyList ->
+            historyAdapter.tracks = historyList
+            historyAdapter.notifyDataSetChanged()
+        }
+
+
+        clearHistoryButton.setOnClickListener {
+            viewModel.clearHistoryList()
+            historyAdapter.notifyDataSetChanged()
+            historyWidget.visibility = View.GONE
+        }
+
+        inputEditText.setOnFocusChangeListener { view, hasFocus ->
+            historyWidget.visibility = if (hasFocus && inputEditText.text.isEmpty() && viewModel.getHistoryList().isNotEmpty()) View.VISIBLE else View.GONE
+        }
+
+        clearButton.setOnClickListener {
+            inputEditText.setText("")
+            adapter.tracks.clear()
+            adapter.notifyDataSetChanged()
+            inputMethodManager.hideSoftInputFromWindow(inputEditText.windowToken, 0)
+        }
+
+        updateButton.setOnClickListener {
+            viewModel.searchRequest(inputEditText.text.toString())
+        }
+
+        backArrowImageView.setOnClickListener {
+            // листенер не нужен, позже убрать его
+        }
+
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                // some code
+            }
+
+            override fun onTextChanged(s: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                clearButton.visibility = clearButtonVisibility(s)
+                textFromSearchWidget = inputEditText.text.toString()
+
+                // On Focus Actions
+                historyWidget.visibility = if (inputEditText.hasFocus() && s?.isEmpty() == true && viewModel.getHistoryList().isNotEmpty()) View.VISIBLE else View.GONE
+
+                viewModel.searchDebounce(
+                    changedText = s?.toString() ?: ""
+                )
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                // some code
+            }
+        }
+
+        inputEditText.addTextChangedListener(textWatcher)
+
+        inputEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                viewModel.searchRequest(inputEditText.text.toString())
+                true
+            }
+            false
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.saveHistoryList()
+    }
+
+    override fun onDestroyView() {
+        viewModel.onDestroy()
+        super.onDestroyView()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(EDIT_TEXT_VALUE, textFromSearchWidget)
+    }
+
+    private fun clearButtonVisibility(s:CharSequence?): Int {
+        return if (s.isNullOrEmpty()) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
+    }
+
+    private fun clickToTrackList(track: Track) {
+        viewModel.addTrackToHistoryList(track)
+
+        val intent = Intent(requireContext(), PlayerActivity::class.java)
+        intent.putExtra(KEY_FOR_PLAYER, track)
+        startActivity(intent)
+    }
+
+    private fun clickToHistoryTrackList(track: Track) {
+        viewModel.transferTrackToTop(track)
+
+        val intent = Intent(requireContext(), PlayerActivity::class.java)
+        intent.putExtra(KEY_FOR_PLAYER, track)
+        startActivity(intent)
+    }
+
+    private fun showPlaceholder(flag: Boolean?, message: String = "") {
+        if (flag != null) {
+            if (flag == true) {
+                badConnectionWidget.visibility = View.GONE
+                notFoundWidget.visibility = View.VISIBLE
+            } else {
+                notFoundWidget.visibility = View.GONE
+                badConnectionWidget.visibility = View.VISIBLE
+                badConnectionTextView.text = message
+            }
+            adapter.tracks.clear()
+            adapter.notifyDataSetChanged()
+        } else {
+            notFoundWidget.visibility = View.GONE
+            badConnectionWidget.visibility = View.GONE
+        }
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({isClickAllowed = true}, CLICK_DEBOUNCE_DELAY)
+        }
+
+        return current
+    }
+
+
+    private fun render(tracksState: TracksState) {
+        when {
+
+            tracksState.isLoading -> showLoading(true)
+
+            else -> {
+
+                showLoading(false)
+
+                if (tracksState.isFailed != null) {
+
+                    when {
+                        tracksState.isFailed -> showPlaceholder(false, getString(R.string.server_error))
+                        else -> showPlaceholder(false, getString(R.string.bad_connection))
+                    }
+
+                } else {
+
+                    when {
+                        tracksState.tracks.isEmpty() -> showPlaceholder(true)
+                        else -> {
+                            adapter.tracks.clear()
+                            adapter.tracks.addAll(tracksState.tracks)
+                            adapter.notifyDataSetChanged()
+                            showPlaceholder(null)
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    private fun showLoading(isLoaded: Boolean) {
+        progressBar.visibility = if (isLoaded) View.VISIBLE else View.GONE
+    }
 }
