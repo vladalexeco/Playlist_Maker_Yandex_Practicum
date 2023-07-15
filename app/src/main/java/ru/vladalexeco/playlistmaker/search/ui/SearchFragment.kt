@@ -94,7 +94,6 @@ class SearchFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -191,7 +190,7 @@ class SearchFragment: Fragment() {
         }
 
         KeyboardVisibilityEvent.setEventListener(
-            activity = activity!!,
+            activity = requireActivity(),
             lifecycleOwner = viewLifecycleOwner,
             object : KeyboardVisibilityEventListener {
                 override fun onVisibilityChanged(isOpen: Boolean) {
