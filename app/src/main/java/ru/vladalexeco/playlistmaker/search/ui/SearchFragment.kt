@@ -2,24 +2,23 @@ package ru.vladalexeco.playlistmaker.search.ui
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent.setEventListener
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.KEY_FOR_PLAYER
 import ru.vladalexeco.playlistmaker.R
@@ -29,6 +28,7 @@ import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
 import ru.vladalexeco.playlistmaker.search.ui.models.TracksState
+
 
 class SearchFragment: Fragment() {
 
@@ -122,6 +122,7 @@ class SearchFragment: Fragment() {
 
         val inputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
+
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
@@ -189,6 +190,20 @@ class SearchFragment: Fragment() {
             false
         }
 
+        KeyboardVisibilityEvent.setEventListener(
+            activity = activity!!,
+            lifecycleOwner = viewLifecycleOwner,
+            object : KeyboardVisibilityEventListener {
+                override fun onVisibilityChanged(isOpen: Boolean) {
+                    if (isOpen) {
+                        onKeyboardVisibilityChanged(true)
+                    } else {
+                        onKeyboardVisibilityChanged(false)
+                    }
+                }
+            }
+        )
+
     }
 
     override fun onStop() {
@@ -202,11 +217,10 @@ class SearchFragment: Fragment() {
         super.onDestroyView()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onPause() {
+        super.onPause()
         if (inputEditText.text.toString().isEmpty()) {
-            adapter.tracks.clear()
-            adapter.notifyDataSetChanged()
+            viewModel.refreshTrackState()
         }
     }
 
@@ -287,7 +301,7 @@ class SearchFragment: Fragment() {
                 } else {
 
                     when {
-                        tracksState.tracks.isEmpty() -> showPlaceholder(true)
+                        tracksState.tracks.isEmpty() && inputEditText.text.toString().isNotEmpty() -> showPlaceholder(true)
                         else -> {
                             adapter.tracks.clear()
                             adapter.tracks.addAll(tracksState.tracks)
