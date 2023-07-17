@@ -2,6 +2,7 @@ package ru.vladalexeco.playlistmaker.search.presentation
 
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -74,6 +75,16 @@ class SearchingViewModel(
         this.lastSearchText = changedText
         handler.removeCallbacks(searchRunnable)
         handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    fun refreshTrackState() {
+        _tracksState.postValue(
+            TracksState(
+                tracks = emptyList(),
+                isLoading = false,
+                isFailed = null
+            )
+        )
     }
 
     fun searchRequest(newSearchText: String) {

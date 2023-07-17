@@ -1,20 +1,24 @@
 package ru.vladalexeco.playlistmaker.settings.ui
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.google.android.material.switchmaterial.SwitchMaterial
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.R
+import ru.vladalexeco.playlistmaker.databinding.FragmentSettingsBinding
 import ru.vladalexeco.playlistmaker.settings.presentation.SettingsViewModel
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsFragment : Fragment() {
 
-    private lateinit var backArrowImageView: ImageView
+    private lateinit var binding: FragmentSettingsBinding
+
     private lateinit var shareAppFrameLayout: FrameLayout
     private lateinit var supportFrameLayout: FrameLayout
     private lateinit var agreementFrameLayout: FrameLayout
@@ -22,17 +26,22 @@ class SettingsActivity : AppCompatActivity() {
 
     private val viewModel: SettingsViewModel by viewModel()
 
-    @SuppressLint("MissingInflatedId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        backArrowImageView = findViewById(R.id.backArrowImageView)
-        shareAppFrameLayout = findViewById(R.id.shareAppFrameLayout)
-        supportFrameLayout = findViewById(R.id.supportFrameLayout)
-        agreementFrameLayout = findViewById(R.id.agreementFrameLayout)
-        themeSwitcher = findViewById(R.id.themeSwitcher)
+        shareAppFrameLayout = binding.shareAppFrameLayout
+        supportFrameLayout = binding.supportFrameLayout
+        agreementFrameLayout = binding.agreementFrameLayout
+        themeSwitcher = binding.themeSwitcher
 
         themeSwitcher.isChecked = viewModel.getThemeState()
 
@@ -67,10 +76,6 @@ class SettingsActivity : AppCompatActivity() {
 
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(browserIntent)
-        }
-
-        backArrowImageView.setOnClickListener {
-            finish()
         }
 
         themeSwitcher.setOnCheckedChangeListener { switcher, checked ->

@@ -58,4 +58,6 @@
     <dimen name="corner_radius">8dp</dimen>
     <!--    /playlist_screen-->
 
+    <dimen name="keyboard_visible_threshold">100dp</dimen>
+
 </resources>
