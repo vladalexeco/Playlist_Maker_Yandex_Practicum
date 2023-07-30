@@ -3,12 +3,16 @@ package ru.vladalexeco.playlistmaker.search.data.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 import ru.vladalexeco.playlistmaker.search.data.dto.Response
 import ru.vladalexeco.playlistmaker.search.data.dto.TrackSearchRequest
 
 class RetrofitNetworkClient(private val context: Context, private val trackService: ITunesApi): NetworkClient {
 
-    override fun doRequest(dto: Any): Response {
+    override suspend fun doRequest(dto: Any): Response {
+
         if (!isConnected()) {
             return Response().apply { resultCode = -1 }
         }
@@ -16,11 +20,14 @@ class RetrofitNetworkClient(private val context: Context, private val trackServi
             return Response().apply { resultCode = 400 }
         }
 
-        val response = trackService.search(dto.expression).execute()
-
-        val body = response.body()
-
-        return body?.apply { resultCode = response.code() } ?: Response().apply { resultCode = response.code() }
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = trackService.search(dto.expression)
+                response.apply { resultCode = 200 }
+            } catch (e: Throwable) {
+                Response().apply { resultCode = 500 }
+            }
+        }
 
     }
 

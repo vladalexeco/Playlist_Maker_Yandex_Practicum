@@ -35,9 +35,6 @@ class SearchingViewModel(
 
     private val tracks = ArrayList<Track>()
 
-    private val handler = Handler(Looper.getMainLooper())
-
-
     private fun assignListToHistoryList() {
         _historyList.postValue(getHistoryList())
     }
@@ -107,54 +104,44 @@ class SearchingViewModel(
                 )
             )
 
-            tracksSearchInteractor.searchTracks(
-                newSearchText,
-                object : TracksSearchInteractor.TracksConsumer {
-                    override fun consume(foundTracks: List<Track>?, isFailed: Boolean?) {
+            viewModelScope.launch {
+                tracksSearchInteractor
+                    .searchTracks(newSearchText)
+                    .collect { pair ->
+                        if (pair.first != null) {
+                            tracks.clear()
+                            tracks.addAll(pair.first!!)
+                        }
 
-                        handler.post {
-
-                            if (foundTracks != null) {
-                                tracks.clear()
-                                tracks.addAll(foundTracks)
-                            }
-
-
-                            if (isFailed != null) {
-
+                        if (pair.second != null) {
+                            _tracksState.postValue(
+                                TracksState(
+                                    tracks = emptyList(),
+                                    isLoading = false,
+                                    isFailed = pair.second
+                                )
+                            )
+                        } else {
+                            if (tracks.isEmpty()) {
                                 _tracksState.postValue(
                                     TracksState(
                                         tracks = emptyList(),
                                         isLoading = false,
-                                        isFailed = isFailed
+                                        isFailed = null
                                     )
                                 )
-
                             } else {
-
-                                if (tracks.isEmpty()) {
-                                    _tracksState.postValue(
-                                        TracksState(
-                                            tracks = emptyList(),
-                                            isLoading = false,
-                                            isFailed = null
-                                        )
+                                _tracksState.postValue(
+                                    TracksState(
+                                        tracks = tracks,
+                                        isLoading = false,
+                                        isFailed = null
                                     )
-                                } else {
-                                    _tracksState.postValue(
-                                        TracksState(
-                                            tracks = tracks,
-                                            isLoading = false,
-                                            isFailed = null
-                                        )
-                                    )
-                                }
-
+                                )
                             }
                         }
                     }
-                }
-            )
+            }
         }
     }
 
