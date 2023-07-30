@@ -1,10 +1,13 @@
 package ru.vladalexeco.playlistmaker.player.presentation
 
-import android.os.Handler
-import android.os.Looper
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerInteractor
 import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 import java.text.SimpleDateFormat
@@ -17,6 +20,8 @@ const val STATE_PAUSED = 3
 
 class PlayerViewModel(private val playerTrack: PlayerTrack, private val audioPlayerInteractor: AudioPlayerInteractor): ViewModel() {
 
+    private var timerJob: Job? = null
+
     private val _playerTrackForRender = MutableLiveData<PlayerTrack>()
     val playerTrackForRender: LiveData<PlayerTrack> = _playerTrackForRender
 
@@ -25,10 +30,7 @@ class PlayerViewModel(private val playerTrack: PlayerTrack, private val audioPla
         assignValToPlayerTrackForRender()
     }
 
-
-    private val mainThreadHandler = Handler(Looper.getMainLooper())
-
-    private val _isCompleted = MutableLiveData<Boolean>(false)
+    private val _isCompleted = MutableLiveData(false)
     val isCompleted: LiveData<Boolean> = _isCompleted
 
     private val _playerState = MutableLiveData(STATE_DEFAULT)
@@ -37,13 +39,6 @@ class PlayerViewModel(private val playerTrack: PlayerTrack, private val audioPla
     private val _formattedTime =  MutableLiveData("00:00")
     val formattedTime: LiveData<String> = _formattedTime
 
-    private val cycleRunnable = object: Runnable {
-        override fun run() {
-            _formattedTime.postValue(getTimeFormat(audioPlayerInteractor.getCurrentPos().toLong()))
-            mainThreadHandler.postDelayed(this, UPDATE_TIME_INFO_MS)
-        }
-    }
-
     private fun assignValToPlayerTrackForRender() {
         val playerTrackTo = playerTrack.copy(
             artworkUrl = playerTrack.artworkUrl.replaceAfterLast('/', "512x512bb.jpg"),
@@ -51,27 +46,25 @@ class PlayerViewModel(private val playerTrack: PlayerTrack, private val audioPla
             trackTime = getTimeFormat(playerTrack.trackTime.toLong())
         )
 
-
-
         _playerTrackForRender.postValue(playerTrackTo)
     }
 
-    fun play() {
+    private fun play() {
         audioPlayerInteractor.play()
         _playerState.postValue(STATE_PLAYING)
-        mainThreadHandler.postDelayed(cycleRunnable, UPDATE_TIME_INFO_MS)
+        startTimer()
         _isCompleted.postValue(false)
     }
 
     fun pause() {
         audioPlayerInteractor.pause()
         _playerState.postValue(STATE_PAUSED)
-        mainThreadHandler.removeCallbacks(cycleRunnable)
+        timerJob?.cancel()
     }
 
     fun release() {
         audioPlayerInteractor.release()
-        mainThreadHandler.removeCallbacks(cycleRunnable)
+        timerJob?.cancel()
     }
 
     fun playbackControl() {
@@ -88,13 +81,22 @@ class PlayerViewModel(private val playerTrack: PlayerTrack, private val audioPla
             },
             callbackComp = {
                 _playerState.postValue(STATE_PREPARED)
-                mainThreadHandler.removeCallbacks(cycleRunnable)
+                timerJob?.cancel()
                 _isCompleted.postValue(true)
             }
         )
     }
 
-    fun getTimeFormat(value: Long): String = SimpleDateFormat("mm:ss", Locale.getDefault()).format(value)
+    private fun startTimer() {
+        timerJob = viewModelScope.launch {
+            while (audioPlayerInteractor.isPlaying()) {
+                delay(UPDATE_TIME_INFO_MS)
+                _formattedTime.postValue(getTimeFormat(audioPlayerInteractor.getCurrentPos().toLong()))
+            }
+        }
+    }
+
+    private fun getTimeFormat(value: Long): String = SimpleDateFormat("mm:ss", Locale.getDefault()).format(value)
 
     companion object {
         private const val UPDATE_TIME_INFO_MS = 300L

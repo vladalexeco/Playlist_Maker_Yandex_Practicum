@@ -34,4 +34,8 @@ class AudioPlayerInteractorImpl(private val playerTrack: PlayerTrack, private va
             }
         )
     }
+
+    override fun isPlaying(): Boolean {
+        return audioPlayerRepository.isPlaying()
+    }
 }

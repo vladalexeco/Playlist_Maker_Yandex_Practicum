@@ -2,10 +2,13 @@ package ru.vladalexeco.playlistmaker.search.presentation
 
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TrackHistoryInteractor
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchInteractor
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
@@ -15,6 +18,8 @@ class SearchingViewModel(
     private val tracksSearchInteractor: TracksSearchInteractor,
     private val trackHistoryInteractor: TrackHistoryInteractor
 ): ViewModel() {
+
+    private var searchJob: Job? = null
 
     private val _historyList = MutableLiveData<ArrayList<Track>>()
     val historyList: LiveData<ArrayList<Track>> = _historyList
@@ -32,10 +37,6 @@ class SearchingViewModel(
 
     private val handler = Handler(Looper.getMainLooper())
 
-    private val searchRunnable = Runnable {
-        val newSearchText = lastSearchText ?: ""
-        searchRequest(newSearchText)
-    }
 
     private fun assignListToHistoryList() {
         _historyList.postValue(getHistoryList())
@@ -67,14 +68,22 @@ class SearchingViewModel(
     }
 
     fun onDestroy() {
-        handler.removeCallbacks(searchRunnable)
+        searchJob?.cancel()
     }
 
     fun searchDebounce(changedText: String) {
 
-        this.lastSearchText = changedText
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+        if (lastSearchText == changedText) {
+            return
+        }
+
+        lastSearchText = changedText
+
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            searchRequest(lastSearchText!!)
+        }
     }
 
     fun refreshTrackState() {
