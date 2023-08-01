@@ -41,9 +41,9 @@ class PlayerViewModel(private val playerTrack: PlayerTrack, private val audioPla
 
     private fun assignValToPlayerTrackForRender() {
         val playerTrackTo = playerTrack.copy(
-            artworkUrl = playerTrack.artworkUrl.replaceAfterLast('/', "512x512bb.jpg"),
-            releaseDate = playerTrack.releaseDate.split("-", limit=2)[0],
-            trackTime = getTimeFormat(playerTrack.trackTime.toLong())
+            artworkUrl = playerTrack.artworkUrl?.replaceAfterLast('/', "512x512bb.jpg"),
+            releaseDate = playerTrack.releaseDate?.split("-", limit=2)?.get(0),
+            trackTime = playerTrack.trackTime?.let { getTimeFormat(it.toLong()) }
         )
 
         _playerTrackForRender.postValue(playerTrackTo)
@@ -97,6 +97,10 @@ class PlayerViewModel(private val playerTrack: PlayerTrack, private val audioPla
     }
 
     private fun getTimeFormat(value: Long): String = SimpleDateFormat("mm:ss", Locale.getDefault()).format(value)
+
+    fun checkEmptinessOrNull(text: String?): String {
+        return if (!text.isNullOrEmpty()) text else "n/a"
+    }
 
     companion object {
         private const val UPDATE_TIME_INFO_MS = 300L

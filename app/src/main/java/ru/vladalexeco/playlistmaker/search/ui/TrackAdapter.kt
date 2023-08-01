@@ -30,7 +30,7 @@ class TrackAdapter(val clickListener: TrackClickListener): RecyclerView.Adapter<
 
         fun bind(track: Track) {
 
-            val formattedTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime.toLong())
+            val formattedTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime?.toLong())
 
             Glide.with(itemView).load(track.artworkUrl).placeholder(R.drawable.placeholder).into(artwork)
             artistName.text = track.artistName
