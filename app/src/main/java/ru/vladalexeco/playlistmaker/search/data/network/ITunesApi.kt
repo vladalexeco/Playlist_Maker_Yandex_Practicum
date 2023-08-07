@@ -7,7 +7,7 @@ import ru.vladalexeco.playlistmaker.search.data.dto.TrackSearchResponse
 
 interface ITunesApi {
     @GET("/search?entity=song")
-    fun search(
+    suspend fun search(
         @Query("term") text: String
-    ): Call<TrackSearchResponse>
+    ): TrackSearchResponse
 }
