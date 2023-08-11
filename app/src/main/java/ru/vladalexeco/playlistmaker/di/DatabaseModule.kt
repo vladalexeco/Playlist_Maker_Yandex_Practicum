@@ -8,7 +8,7 @@ import ru.vladalexeco.playlistmaker.database.AppDatabase
 val databaseModule = module {
 
     single<AppDatabase> {
-        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db").build()
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db").fallbackToDestructiveMigration().build()
     }
 
 }

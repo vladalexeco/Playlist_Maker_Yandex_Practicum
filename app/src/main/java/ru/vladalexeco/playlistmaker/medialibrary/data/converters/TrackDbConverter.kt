@@ -16,7 +16,8 @@ class TrackDbConverter {
             releaseDate = libraryTrackDto.releaseDate,
             primaryGenreName = libraryTrackDto.primaryGenreName,
             country = libraryTrackDto.country,
-            previewUrl = libraryTrackDto.previewUrl
+            previewUrl = libraryTrackDto.previewUrl,
+            insertTimeStamp = libraryTrackDto.insertTimeStamp
         )
     }
 
@@ -31,7 +32,8 @@ class TrackDbConverter {
             releaseDate = trackEntity.releaseDate,
             primaryGenreName = trackEntity.primaryGenreName,
             country = trackEntity.country,
-            previewUrl = trackEntity.previewUrl
+            previewUrl = trackEntity.previewUrl,
+            insertTimeStamp = trackEntity.insertTimeStamp
         )
     }
 

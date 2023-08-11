@@ -154,7 +154,8 @@ class PlayerViewModel(
     }
 
     suspend fun addPlayerTrackToFavourites() {
-        audioPlayerDatabaseInteractor.addPlayerTrackToDatabase(playerTrack)
+        val insertionTimestamp = System.currentTimeMillis()
+        audioPlayerDatabaseInteractor.addPlayerTrackToDatabase(playerTrack, insertionTimestamp)
     }
 
     private fun checkTrackId(listOfIds: List<Int>): Boolean {

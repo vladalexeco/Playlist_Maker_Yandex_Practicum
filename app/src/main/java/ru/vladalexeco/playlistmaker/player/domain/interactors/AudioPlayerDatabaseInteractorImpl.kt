@@ -11,8 +11,8 @@ class AudioPlayerDatabaseInteractorImpl(
     private val playerTrackDataConverter: PlayerTrackDataConverter
 ) : AudioPlayerDatabaseInteractor {
 
-    override suspend fun addPlayerTrackToDatabase(playerTrack: PlayerTrack) {
-        audioPlayerDatabaseRepository.addPlayerTrackToDatabase(playerTrackDataConverter.map(playerTrack))
+    override suspend fun addPlayerTrackToDatabase(playerTrack: PlayerTrack, insertionTimeStamp: Long) {
+        audioPlayerDatabaseRepository.addPlayerTrackToDatabase(playerTrackDataConverter.map(playerTrack, insertionTimeStamp))
     }
 
     override suspend fun deletePlayerTrackFromDatabase(playerTrack: PlayerTrack) {

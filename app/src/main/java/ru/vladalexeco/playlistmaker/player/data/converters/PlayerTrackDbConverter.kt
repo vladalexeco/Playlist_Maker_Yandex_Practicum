@@ -16,7 +16,8 @@ class PlayerTrackDbConverter {
             releaseDate = playerTrackDto.releaseDate,
             primaryGenreName = playerTrackDto.primaryGenreName,
             country = playerTrackDto.country,
-            previewUrl = playerTrackDto.previewUrl
+            previewUrl = playerTrackDto.previewUrl,
+            insertTimeStamp = playerTrackDto.insertionTimeStamp
         )
     }
 

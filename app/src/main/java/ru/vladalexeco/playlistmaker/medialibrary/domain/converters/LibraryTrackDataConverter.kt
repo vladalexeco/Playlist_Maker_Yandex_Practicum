@@ -16,7 +16,8 @@ class LibraryTrackDataConverter {
             releaseDate = libraryTrack.releaseDate,
             primaryGenreName = libraryTrack.primaryGenreName,
             country = libraryTrack.country,
-            previewUrl = libraryTrack.previewUrl
+            previewUrl = libraryTrack.previewUrl,
+            insertTimeStamp = libraryTrack.insertTimeStamp
         )
     }
 
@@ -31,7 +32,8 @@ class LibraryTrackDataConverter {
             releaseDate = libraryTrackDto.releaseDate,
             primaryGenreName = libraryTrackDto.primaryGenreName,
             country = libraryTrackDto.country,
-            previewUrl = libraryTrackDto.previewUrl
+            previewUrl = libraryTrackDto.previewUrl,
+            insertTimeStamp = libraryTrackDto.insertTimeStamp
         )
     }
 }

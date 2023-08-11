@@ -43,6 +43,7 @@ class MedialibraryFavouritesViewModel(
     }
 
     private fun processResult(libraryTracks: List<LibraryTrack>) {
+
         if (libraryTracks.isEmpty()) {
             _databaseTracksState.postValue(
                 LibraryTracksState(

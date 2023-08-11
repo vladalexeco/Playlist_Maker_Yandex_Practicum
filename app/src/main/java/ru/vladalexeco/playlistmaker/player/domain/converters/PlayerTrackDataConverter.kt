@@ -4,7 +4,7 @@ import ru.vladalexeco.playlistmaker.player.data.dto.PlayerTrackDto
 import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 
 class PlayerTrackDataConverter {
-    fun map(playerTrack: PlayerTrack): PlayerTrackDto {
+    fun map(playerTrack: PlayerTrack, insertionTimeStamp: Long? = null): PlayerTrackDto {
         return PlayerTrackDto(
             trackId = playerTrack.trackId,
             trackName = playerTrack.trackName,
@@ -15,7 +15,8 @@ class PlayerTrackDataConverter {
             releaseDate = playerTrack.releaseDate,
             primaryGenreName = playerTrack.primaryGenreName,
             country = playerTrack.country,
-            previewUrl = playerTrack.previewUrl
+            previewUrl = playerTrack.previewUrl,
+            insertionTimeStamp = insertionTimeStamp
         )
     }
 
