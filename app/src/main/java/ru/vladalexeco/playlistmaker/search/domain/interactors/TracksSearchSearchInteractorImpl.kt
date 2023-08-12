@@ -6,7 +6,6 @@ import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchInterac
 import ru.vladalexeco.playlistmaker.search.domain.interfaces.TracksSearchRepository
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.util.Resource
-import java.util.concurrent.Executors
 
 class TracksSearchSearchInteractorImpl(private val tracksSearchRepository: TracksSearchRepository): TracksSearchInteractor {
 

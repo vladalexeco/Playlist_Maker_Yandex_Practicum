@@ -11,19 +11,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.KEY_FOR_PLAYER
 import ru.vladalexeco.playlistmaker.databinding.FragmentFavouritesMedialibraryBinding
-import ru.vladalexeco.playlistmaker.medialibrary.domain.converters.LibraryTrackToTrackConverter
 import ru.vladalexeco.playlistmaker.medialibrary.domain.models.LibraryTrack
 import ru.vladalexeco.playlistmaker.medialibrary.presentation.MedialibraryFavouritesViewModel
 import ru.vladalexeco.playlistmaker.medialibrary.presentation.state_classes.LibraryTracksState
 import ru.vladalexeco.playlistmaker.medialibrary.ui.adapters.LibraryTrackAdapter
 import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
-import ru.vladalexeco.playlistmaker.search.ui.SearchFragment
 
 class MedialibraryFavouritesFragment : Fragment() {
 
@@ -83,7 +80,7 @@ class MedialibraryFavouritesFragment : Fragment() {
             isClickAllowed = false
 
             viewLifecycleOwner.lifecycleScope.launch {
-                delay(MedialibraryFavouritesFragment.CLICK_DEBOUNCE_DELAY)
+                delay(CLICK_DEBOUNCE_DELAY)
                 isClickAllowed = true
             }
         }

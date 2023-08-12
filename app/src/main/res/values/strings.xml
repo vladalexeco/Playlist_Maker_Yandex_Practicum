@@ -27,6 +27,7 @@
     <string name="bad_connection">Проблемы со связью\n\n Загрузка не удалась. Проверьте подключение к интернету</string>
     <string name="server_error">На сервере произошла ошибка</string>
     <string name="update">Обновить</string>
+    <string name="clear_history">Очистить историю</string>
     <!--/SearchActivity-->
 
     <!--PlayerActivity-->
@@ -43,5 +44,14 @@
     <string name="favourites_tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
     <!--/Medialibrary-->
+
+
+    <!--Player screen-->
+    <string name="country">Страна</string>
+    <string name="genre">Жанр</string>
+    <string name="year">Год</string>
+    <string name="album">Альбом</string>
+    <string name="duration">Длительность</string>
+    <!--/Player screen-->
 
 </resources>

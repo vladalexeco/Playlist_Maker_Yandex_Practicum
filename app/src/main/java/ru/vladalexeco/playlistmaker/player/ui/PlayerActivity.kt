@@ -26,8 +26,6 @@ import java.io.Serializable
 
 class  PlayerActivity : AppCompatActivity() {
 
-    var isFavourite = false
-
     private lateinit var backArrow: ImageView
     private lateinit var coverImage: ImageView
     private lateinit var trackName: TextView

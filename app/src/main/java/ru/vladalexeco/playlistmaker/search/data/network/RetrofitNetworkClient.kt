@@ -5,7 +5,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import ru.vladalexeco.playlistmaker.search.data.dto.Response
 import ru.vladalexeco.playlistmaker.search.data.dto.TrackSearchRequest
 

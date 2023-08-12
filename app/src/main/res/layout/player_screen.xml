@@ -85,7 +85,7 @@
             android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/startGuideline"
-            android:text="Страна"/>
+            android:text="@string/country"/>
 
         <TextView
             style="@style/TextViewSmallRightFontPlayListScreenStyle"
@@ -108,7 +108,7 @@
             android:textSize="13sp"
             app:layout_constraintStart_toStartOf="@id/startGuideline"
             app:layout_constraintBottom_toTopOf="@id/countryLabel"
-            android:text="Жанр"/>
+            android:text="@string/genre"/>
 
         <TextView
             style="@style/TextViewSmallRightFontPlayListScreenStyle"
@@ -131,7 +131,7 @@
             android:textSize="13sp"
             app:layout_constraintStart_toStartOf="@id/startGuideline"
             app:layout_constraintBottom_toTopOf="@id/genreLabel"
-            android:text="Год"/>
+            android:text="@string/year"/>
 
         <TextView
             style="@style/TextViewSmallRightFontPlayListScreenStyle"
@@ -154,7 +154,7 @@
             android:textSize="13sp"
             app:layout_constraintStart_toStartOf="@id/startGuideline"
             app:layout_constraintBottom_toTopOf="@id/yearLabel"
-            android:text="Альбом"/>
+            android:text="@string/album"/>
 
         <TextView
             style="@style/TextViewSmallRightFontPlayListScreenStyle"
@@ -177,7 +177,7 @@
             android:layout_marginBottom="17dp"
             app:layout_constraintStart_toStartOf="@id/startGuideline"
             app:layout_constraintBottom_toTopOf="@id/albumLabel"
-            android:text="Длительность"/>
+            android:text="@string/duration"/>
 
         <TextView
             style="@style/TextViewSmallRightFontPlayListScreenStyle"
