@@ -23,10 +23,10 @@ class TrackAdapter(val clickListener: TrackClickListener): RecyclerView.Adapter<
     class TrackHolder(parent: ViewGroup): RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.track_view, parent, false)
     ) {
-        var artwork = itemView.findViewById<ImageView>(R.id.artwork)
-        var artistName = itemView.findViewById<TextView>(R.id.artistName)
-        var trackName = itemView.findViewById<TextView>(R.id.trackName)
-        var trackTime = itemView.findViewById<TextView>(R.id.trackTime)
+        private var artwork = itemView.findViewById<ImageView>(R.id.artwork)
+        private var artistName = itemView.findViewById<TextView>(R.id.artistName)
+        private var trackName = itemView.findViewById<TextView>(R.id.trackName)
+        private var trackTime = itemView.findViewById<TextView>(R.id.trackTime)
 
         fun bind(track: Track) {
 

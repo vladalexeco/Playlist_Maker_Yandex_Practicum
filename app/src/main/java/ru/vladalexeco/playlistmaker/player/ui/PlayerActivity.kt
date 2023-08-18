@@ -1,5 +1,6 @@
 package ru.vladalexeco.playlistmaker.player.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -7,8 +8,10 @@ import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.vladalexeco.playlistmaker.R
@@ -18,6 +21,7 @@ import ru.vladalexeco.playlistmaker.player.presentation.PlayerViewModel
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PAUSED
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PLAYING
 import ru.vladalexeco.playlistmaker.KEY_FOR_PLAYER
+import ru.vladalexeco.playlistmaker.player.presentation.state_classes.FavouriteTrackState
 import java.io.Serializable
 
 class  PlayerActivity : AppCompatActivity() {
@@ -33,6 +37,7 @@ class  PlayerActivity : AppCompatActivity() {
     private lateinit var country: TextView
     private lateinit var playButton: ImageButton
     private lateinit var durationInTime: TextView
+    private lateinit var favouriteButton: ImageButton
 
     private lateinit var playerTrack: PlayerTrack
 
@@ -40,6 +45,7 @@ class  PlayerActivity : AppCompatActivity() {
         parametersOf(playerTrack)
     }
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.player_screen)
@@ -55,6 +61,7 @@ class  PlayerActivity : AppCompatActivity() {
         country = findViewById(R.id.countryName)
         playButton = findViewById(R.id.playButton)
         durationInTime = findViewById(R.id.durationInTime)
+        favouriteButton = findViewById(R.id.favouriteButton)
 
         backArrow.setOnClickListener {
             finish()
@@ -64,6 +71,22 @@ class  PlayerActivity : AppCompatActivity() {
             viewModel.playbackControl()
         }
 
+        favouriteButton.setOnClickListener {
+            if (viewModel.checkValueFromIsFavourite()) {
+                favouriteButton.setImageResource(R.drawable.like_button)
+                viewModel.assignValueToIsFavourite(false)
+                lifecycleScope.launch {
+                    viewModel.deletePlayerTrackFromFavourites()
+                }
+            } else {
+                favouriteButton.setImageResource(R.drawable.like_button_marked)
+                viewModel.assignValueToIsFavourite(true)
+                lifecycleScope.launch {
+                    viewModel.addPlayerTrackToFavourites()
+                }
+            }
+        }
+
         val track = intent.getSerializable(KEY_FOR_PLAYER, Track::class.java)
 
         playerTrack = convertTrackToPlayerTrack(track)
@@ -71,6 +94,8 @@ class  PlayerActivity : AppCompatActivity() {
         if (playerTrack.previewUrl == null) {
             playButton.isEnabled = false
         }
+
+        viewModel.checkTrackIsFavourite()
 
         viewModel.playerTrackForRender.observe(this) { playerTrack ->
             render(playerTrack)
@@ -94,6 +119,31 @@ class  PlayerActivity : AppCompatActivity() {
 
         viewModel.formattedTime.observe(this) { trackTime ->
             durationInTime.text = trackTime
+        }
+
+        viewModel.favouriteTrack.observe(this) { favouriteTrackState ->
+            renderFavouriteButton(favouriteTrackState)
+        }
+
+    }
+
+    private fun renderFavouriteButton(favouriteTrackState: FavouriteTrackState) {
+
+        when {
+
+            favouriteTrackState.isLoading -> {
+                favouriteButton.isEnabled = false
+            }
+
+            else -> {
+                favouriteButton.isEnabled = true
+
+                if (favouriteTrackState.isFavourite == true) {
+                    favouriteButton.setImageResource(R.drawable.like_button_marked)
+                } else {
+                    favouriteButton.setImageResource(R.drawable.like_button)
+                }
+            }
         }
 
     }
@@ -127,7 +177,8 @@ class  PlayerActivity : AppCompatActivity() {
             releaseDate = track.releaseDate,
             primaryGenreName = track.primaryGenreName,
             country = track.country,
-            previewUrl = track.previewUrl
+            previewUrl = track.previewUrl,
+            insertionTimeStamp = null
         )
     }
 

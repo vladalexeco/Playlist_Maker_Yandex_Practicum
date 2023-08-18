@@ -22,7 +22,7 @@ class App: Application() {
 
         startKoin {
             androidContext(this@App)
-            modules(playerModule, searchModule, settingsModule, sharingModule, medialibraryModule)
+            modules(playerModule, searchModule, settingsModule, sharingModule, medialibraryModule, databaseModule)
         }
 
         val sharedPreferences = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
