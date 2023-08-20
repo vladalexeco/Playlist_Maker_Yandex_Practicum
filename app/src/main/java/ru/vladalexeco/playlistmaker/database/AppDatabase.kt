@@ -8,4 +8,5 @@ import ru.vladalexeco.playlistmaker.database.entity.TrackEntity
 @Database(version = 2, entities = [TrackEntity::class])
 abstract class AppDatabase: RoomDatabase() {
     abstract fun trackDao(): TrackDao
+
 }

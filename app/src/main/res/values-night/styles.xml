@@ -134,4 +134,17 @@
 
     <!--/Styles for bottom menu-->
 
+    <!--Styles for new playlist fragment screen-->
+
+    <style name="EditTextNewPlaylistStyle">
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+
+    <style name="TextInputLayoutStyleNewPlaylist" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <!--/Styles for new playlist fragment screen-->
+
 </resources>

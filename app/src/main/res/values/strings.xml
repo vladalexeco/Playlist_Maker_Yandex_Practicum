@@ -54,4 +54,12 @@
     <string name="duration">Длительность</string>
     <!--/Player screen-->
 
+
+    <!--New playlist fragment-->
+    <string name="new_playlist_new_playlist_screen">Новый плейлист</string>
+    <string name="name_hint">Название*</string>
+    <string name="description_hint">Описание</string>
+    <string name="text_for_button">Создать</string>
+    <!--/New playlist fragment-->
+
 </resources>

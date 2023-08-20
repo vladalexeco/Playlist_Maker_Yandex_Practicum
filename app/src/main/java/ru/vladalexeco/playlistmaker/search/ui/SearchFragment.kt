@@ -65,7 +65,6 @@ class SearchFragment: Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var notFoundWidget: LinearLayout
     private lateinit var badConnectionWidget: LinearLayout
-    private lateinit var updateButton: Button
     private lateinit var badConnectionTextView: TextView
     private lateinit var historyWidget: LinearLayout
     private lateinit var historyRecyclerView: RecyclerView
@@ -104,7 +103,6 @@ class SearchFragment: Fragment() {
         clearButton = binding.clearIcon
         notFoundWidget = binding.notFoundWidget
         badConnectionWidget = binding.badConnectionWidget
-        updateButton = binding.updateButton
         badConnectionTextView = binding.badConnection
         historyWidget = binding.historyWidget
         clearHistoryButton = binding.clearHistoryButton
@@ -150,10 +148,6 @@ class SearchFragment: Fragment() {
             adapter.tracks.clear()
             adapter.notifyDataSetChanged()
             inputMethodManager.hideSoftInputFromWindow(inputEditText.windowToken, 0)
-        }
-
-        updateButton.setOnClickListener {
-            viewModel.searchRequest(inputEditText.text.toString())
         }
 
         val textWatcher = object : TextWatcher {
