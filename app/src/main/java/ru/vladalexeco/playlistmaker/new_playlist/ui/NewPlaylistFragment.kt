@@ -26,7 +26,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.markodevcic.peko.PermissionRequester
 import com.markodevcic.peko.PermissionResult
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 import ru.vladalexeco.playlistmaker.databinding.FragmentNewPlaylistBinding
 import ru.vladalexeco.playlistmaker.new_playlist.presentation.NewPlaylistViewModel
 import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
@@ -176,8 +179,9 @@ class NewPlaylistFragment : Fragment() {
 
         newPlayListButton.setOnClickListener {
 
-            val filepath = if (uriOfImage != null) viewModel.getNameForFile(editNameEditText.text.toString()) else ""
             val name = editNameEditText.text.toString()
+
+            val filepath = if (uriOfImage != null) viewModel.getNameForFile(editNameEditText.text.toString()) else ""
 
             val playlist = Playlist(
                 name = name,
@@ -238,6 +242,16 @@ class NewPlaylistFragment : Fragment() {
             }
             .setPositiveButton("Завершить") { dialog, which ->
                 findNavController().navigateUp()
+            }
+            .show()
+    }
+
+    private fun showDialogExistName() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Уведомление")
+            .setMessage("Плейлист с таким именем уже существует. Поменяйте имя.")
+            .setPositiveButton("Ок") { dialog, which ->
+
             }
             .show()
     }
