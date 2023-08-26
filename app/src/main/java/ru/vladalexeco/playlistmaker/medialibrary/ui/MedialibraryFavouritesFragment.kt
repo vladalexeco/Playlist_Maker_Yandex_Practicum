@@ -62,8 +62,6 @@ class MedialibraryFavouritesFragment : Fragment() {
         libraryRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         libraryRecyclerView.adapter = adapter
 
-//        viewModel.fillData()
-
         viewModel.databaseTracksState.observe(viewLifecycleOwner) { libraryTrackState ->
             render(libraryTrackState)
         }

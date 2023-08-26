@@ -120,6 +120,7 @@ class NewPlaylistFragment : Fragment() {
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
                 //обрабатываем событие выбора пользователем фотографии
                 if (uri != null) {
+                    loadImageImageView.scaleType = ImageView.ScaleType.CENTER_CROP
                     loadImageImageView.setImageURI(uri)
                     imageIsLoaded = true
                     uriOfImage = uri
@@ -242,16 +243,6 @@ class NewPlaylistFragment : Fragment() {
             }
             .setPositiveButton("Завершить") { dialog, which ->
                 findNavController().navigateUp()
-            }
-            .show()
-    }
-
-    private fun showDialogExistName() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Уведомление")
-            .setMessage("Плейлист с таким именем уже существует. Поменяйте имя.")
-            .setPositiveButton("Ок") { dialog, which ->
-
             }
             .show()
     }
