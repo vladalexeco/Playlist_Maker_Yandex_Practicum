@@ -9,18 +9,19 @@ import android.widget.ProgressBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.vladalexeco.playlistmaker.KEY_FOR_PLAYER
+import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.databinding.FragmentFavouritesMedialibraryBinding
 import ru.vladalexeco.playlistmaker.medialibrary.domain.models.LibraryTrack
 import ru.vladalexeco.playlistmaker.medialibrary.presentation.MedialibraryFavouritesViewModel
 import ru.vladalexeco.playlistmaker.medialibrary.presentation.state_classes.LibraryTracksState
 import ru.vladalexeco.playlistmaker.medialibrary.ui.adapters.LibraryTrackAdapter
-import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
+import ru.vladalexeco.playlistmaker.player.ui.PlayerFragment
 
 class MedialibraryFavouritesFragment : Fragment() {
 
@@ -89,9 +90,11 @@ class MedialibraryFavouritesFragment : Fragment() {
 
     private fun clickOnItem(libraryTrack: LibraryTrack) {
         val track = viewModel.convertLibraryTrackToTrack(libraryTrack)
-        val intent = Intent(requireContext(), PlayerActivity::class.java)
-        intent.putExtra(KEY_FOR_PLAYER, track)
-        startActivity(intent)
+
+        findNavController().navigate(
+            R.id.action_medialibraryFragment_to_playerFragment,
+            PlayerFragment.createArgs(track)
+        )
     }
 
     private fun render(libraryTracksState: LibraryTracksState) {

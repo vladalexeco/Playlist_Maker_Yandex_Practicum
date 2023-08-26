@@ -1,30 +1,39 @@
 package ru.vladalexeco.playlistmaker.player.ui
 
-import android.annotation.SuppressLint
-import android.content.Intent
+import android.content.Context
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.vladalexeco.playlistmaker.R
+import ru.vladalexeco.playlistmaker.databinding.FragmentPlayerBinding
 import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
-import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.player.presentation.PlayerViewModel
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PAUSED
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PLAYING
-import ru.vladalexeco.playlistmaker.KEY_FOR_PLAYER
 import ru.vladalexeco.playlistmaker.player.presentation.state_classes.FavouriteTrackState
+import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
+import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import java.io.Serializable
 
-class  PlayerActivity : AppCompatActivity() {
+class PlayerFragment : Fragment() {
+
+    private var bottomNavigationListener: BottomNavigationListener? = null
+
+    private lateinit var binding: FragmentPlayerBinding
 
     private lateinit var backArrow: ImageView
     private lateinit var coverImage: ImageView
@@ -45,26 +54,47 @@ class  PlayerActivity : AppCompatActivity() {
         parametersOf(playerTrack)
     }
 
-    @SuppressLint("MissingInflatedId")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.player_screen)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is BottomNavigationListener) {
+            bottomNavigationListener = context
+        } else {
+            throw IllegalArgumentException("Activity must implement BottomNavigationListener")
+        }
+    }
 
-        backArrow = findViewById(R.id.backArrowPlaylist)
-        coverImage = findViewById(R.id.coverMax)
-        trackName = findViewById(R.id.trackName)
-        artistName = findViewById(R.id.artistName)
-        duration = findViewById(R.id.durationName)
-        collectionName = findViewById(R.id.albumName)
-        year = findViewById(R.id.yearName)
-        genre = findViewById(R.id.genreName)
-        country = findViewById(R.id.countryName)
-        playButton = findViewById(R.id.playButton)
-        durationInTime = findViewById(R.id.durationInTime)
-        favouriteButton = findViewById(R.id.favouriteButton)
+    override fun onDetach() {
+        super.onDetach()
+        bottomNavigationListener = null
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        backArrow = binding.backArrowPlaylist
+        coverImage = binding.coverMax
+        trackName = binding.trackName
+        artistName = binding.artistName
+        duration = binding.durationName
+        collectionName = binding.albumName
+        year = binding.yearName
+        genre = binding.genreName
+        country = binding.countryName
+        playButton = binding.playButton
+        durationInTime = binding.durationInTime
+        favouriteButton = binding.favouriteButton
 
         backArrow.setOnClickListener {
-            finish()
+            findNavController().navigateUp()
         }
 
         playButton.setOnClickListener {
@@ -87,7 +117,7 @@ class  PlayerActivity : AppCompatActivity() {
             }
         }
 
-        val track = intent.getSerializable(KEY_FOR_PLAYER, Track::class.java)
+        val track = requireArguments().getSerializableExtra(CURRENT_TRACK, Track::class.java)
 
         playerTrack = convertTrackToPlayerTrack(track)
 
@@ -97,11 +127,11 @@ class  PlayerActivity : AppCompatActivity() {
 
         viewModel.checkTrackIsFavourite()
 
-        viewModel.playerTrackForRender.observe(this) { playerTrack ->
+        viewModel.playerTrackForRender.observe(viewLifecycleOwner) { playerTrack ->
             render(playerTrack)
         }
 
-        viewModel.playerState.observe(this) { statePlaying ->
+        viewModel.playerState.observe(viewLifecycleOwner) { statePlaying ->
 
             when (statePlaying) {
                 STATE_PLAYING -> playButton.setImageResource(R.drawable.pause_button)
@@ -110,21 +140,41 @@ class  PlayerActivity : AppCompatActivity() {
 
         }
 
-        viewModel.isCompleted.observe(this) { isCompleted ->
+        viewModel.isCompleted.observe(viewLifecycleOwner) { isCompleted ->
             if (isCompleted) {
                 durationInTime.text = getString(R.string.initial_time)
                 playButton.setImageResource(R.drawable.play_button)
             }
         }
 
-        viewModel.formattedTime.observe(this) { trackTime ->
+        viewModel.formattedTime.observe(viewLifecycleOwner) { trackTime ->
             durationInTime.text = trackTime
         }
 
-        viewModel.favouriteTrack.observe(this) { favouriteTrackState ->
+        viewModel.favouriteTrack.observe(viewLifecycleOwner) { favouriteTrackState ->
             renderFavouriteButton(favouriteTrackState)
         }
 
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.pause()
+    }
+
+    override fun onDestroy() {
+        viewModel.release()
+        super.onDestroy()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        hideBottomNavigation(true)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        hideBottomNavigation(false)
     }
 
     private fun renderFavouriteButton(favouriteTrackState: FavouriteTrackState) {
@@ -148,22 +198,8 @@ class  PlayerActivity : AppCompatActivity() {
 
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.pause()
-    }
-
-    override fun onDestroy() {
-        viewModel.release()
-        super.onDestroy()
-    }
-
-
-    fun <T : Serializable?> Intent.getSerializable(key: String, m_class: Class<T>): T {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            this.getSerializableExtra(key, m_class)!!
-        else
-            this.getSerializableExtra(key) as T
+    private fun hideBottomNavigation(isHide: Boolean) {
+        bottomNavigationListener?.toggleBottomNavigationViewVisibility(!isHide)
     }
 
     private fun convertTrackToPlayerTrack(track: Track): PlayerTrack {
@@ -198,7 +234,19 @@ class  PlayerActivity : AppCompatActivity() {
             .into(coverImage)
     }
 
+    private fun <T : Serializable?> Bundle.getSerializableExtra(key: String, m_class: Class<T>): T {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            this.getSerializable(key, m_class)!!
+        else
+            this.getSerializable(key) as T
+    }
+
+    companion object {
+        private const val CURRENT_TRACK = "CURRENT_TRACK"
+
+        fun createArgs(track: Track): Bundle {
+            return bundleOf(CURRENT_TRACK to track)
+        }
+    }
 
 }
-
-

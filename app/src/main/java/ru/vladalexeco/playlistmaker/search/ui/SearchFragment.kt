@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.delay
@@ -24,7 +26,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.KEY_FOR_PLAYER
 import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.databinding.FragmentSearchBinding
-import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
+import ru.vladalexeco.playlistmaker.player.ui.PlayerFragment
 import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
@@ -50,7 +52,7 @@ class SearchFragment: Fragment() {
 
     private val adapter = TrackAdapter {
         if (clickDebounce()) {
-            clickToTrackList(it)
+            clickToTrackList(track = it)
         }
     }
 
@@ -203,6 +205,11 @@ class SearchFragment: Fragment() {
         viewModel.saveHistoryList()
     }
 
+    override fun onResume() {
+        super.onResume()
+        isClickAllowed = true
+    }
+
 
     override fun onDestroyView() {
         viewModel.onDestroy()
@@ -231,18 +238,20 @@ class SearchFragment: Fragment() {
 
     private fun clickToTrackList(track: Track) {
         viewModel.addTrackToHistoryList(track)
-
-        val intent = Intent(requireContext(), PlayerActivity::class.java)
-        intent.putExtra(KEY_FOR_PLAYER, track)
-        startActivity(intent)
+        Log.d("TAG", "You are here")
+        findNavController().navigate(
+            R.id.action_searchFragment_to_playerFragment,
+            PlayerFragment.createArgs(track)
+        )
     }
 
     private fun clickToHistoryTrackList(track: Track) {
         viewModel.transferTrackToTop(track)
 
-        val intent = Intent(requireContext(), PlayerActivity::class.java)
-        intent.putExtra(KEY_FOR_PLAYER, track)
-        startActivity(intent)
+        findNavController().navigate(
+            R.id.action_searchFragment_to_playerFragment,
+            PlayerFragment.createArgs(track)
+        )
     }
 
     private fun showPlaceholder(flag: Boolean?, message: String = "") {
