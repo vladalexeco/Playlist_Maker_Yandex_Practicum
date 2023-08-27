@@ -3,30 +3,40 @@ package ru.vladalexeco.playlistmaker.player.ui
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.databinding.FragmentPlayerBinding
+import ru.vladalexeco.playlistmaker.new_playlist.domain.models.Playlist
 import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 import ru.vladalexeco.playlistmaker.player.presentation.PlayerViewModel
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PAUSED
 import ru.vladalexeco.playlistmaker.player.presentation.STATE_PLAYING
 import ru.vladalexeco.playlistmaker.player.presentation.state_classes.FavouriteTrackState
+import ru.vladalexeco.playlistmaker.player.ui.adapters.PlaylistBottomSheetAdapter
 import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
+import ru.vladalexeco.playlistmaker.search.domain.models.mapToPlayerTrack
 import java.io.Serializable
 
 class PlayerFragment : Fragment() {
@@ -47,6 +57,19 @@ class PlayerFragment : Fragment() {
     private lateinit var playButton: ImageButton
     private lateinit var durationInTime: TextView
     private lateinit var favouriteButton: ImageButton
+    private lateinit var addToPlaylistButton: ImageButton
+    private lateinit var createPlaylistButton: Button
+    private lateinit var playlistRecyclerView: RecyclerView
+    private lateinit var bottomSheetContainer: LinearLayout
+    private lateinit var overlay: View
+
+    var track: Track? = null
+
+    var allowToEmit = false
+
+    var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>? = null
+
+    private var adapter: PlaylistBottomSheetAdapter? = null
 
     private lateinit var playerTrack: PlayerTrack
 
@@ -80,6 +103,12 @@ class PlayerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        allowToEmit = false
+
+        adapter = PlaylistBottomSheetAdapter(requireContext()) {playlist ->
+            clickOnItem(playlist)
+        }
+
         backArrow = binding.backArrowPlaylist
         coverImage = binding.coverMax
         trackName = binding.trackName
@@ -92,6 +121,44 @@ class PlayerFragment : Fragment() {
         playButton = binding.playButton
         durationInTime = binding.durationInTime
         favouriteButton = binding.favouriteButton
+        addToPlaylistButton = binding.addToPlaylistButton
+        createPlaylistButton = binding.createPlaylistBottomSheetButton
+        overlay = binding.overlay
+        playlistRecyclerView = binding.playlistsBottomSheetRecyclerview
+
+        playlistRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        playlistRecyclerView.adapter = adapter
+
+        bottomSheetContainer = binding.playlistBottomSheet
+
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        bottomSheetBehavior!!.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        overlay.visibility = View.GONE
+                    }
+                    else -> {
+                        overlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
+
+        addToPlaylistButton.setOnClickListener {
+            bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        createPlaylistButton.setOnClickListener {
+            findNavController().navigate(R.id.action_playerFragment_to_newPlaylistFragment)
+        }
 
         backArrow.setOnClickListener {
             findNavController().navigateUp()
@@ -117,9 +184,9 @@ class PlayerFragment : Fragment() {
             }
         }
 
-        val track = requireArguments().getSerializableExtra(CURRENT_TRACK, Track::class.java)
+        track = requireArguments().getSerializableExtra(CURRENT_TRACK, Track::class.java)
 
-        playerTrack = convertTrackToPlayerTrack(track)
+        playerTrack = track!!.mapToPlayerTrack()
 
         if (playerTrack.previewUrl == null) {
             playButton.isEnabled = false
@@ -155,6 +222,24 @@ class PlayerFragment : Fragment() {
             renderFavouriteButton(favouriteTrackState)
         }
 
+        viewModel.playlistsFromDatabase.observe(viewLifecycleOwner) { listOfPlaylists ->
+            addPlaylistsToBottomSheetRecyclerView(listOfPlaylists)
+        }
+
+        viewModel.checkIsTrackInPlaylist.observe(viewLifecycleOwner) { playlistTrackState ->
+            if (allowToEmit) {
+                if (playlistTrackState.trackIsInPlaylist) {
+                    Toast.makeText(requireContext(), "Это трек ранее уже был добавлен в плейлист ${playlistTrackState.nameOfPlaylist}", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Трек добавлен в плейлист ${playlistTrackState.nameOfPlaylist}", Toast.LENGTH_SHORT).show()
+                    viewModel.getPlaylists()
+                }
+
+                bottomSheetBehavior?.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+
+        }
+
     }
 
     override fun onPause() {
@@ -170,11 +255,20 @@ class PlayerFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         hideBottomNavigation(true)
+        viewModel.getPlaylists()
     }
 
     override fun onStop() {
         super.onStop()
         hideBottomNavigation(false)
+    }
+
+    private fun clickOnItem(playlist: Playlist) {
+
+        allowToEmit = true
+
+        viewModel.checkAndAddTrackToPlaylist(playlist, track)
+
     }
 
     private fun renderFavouriteButton(favouriteTrackState: FavouriteTrackState) {
@@ -198,24 +292,14 @@ class PlayerFragment : Fragment() {
 
     }
 
-    private fun hideBottomNavigation(isHide: Boolean) {
-        bottomNavigationListener?.toggleBottomNavigationViewVisibility(!isHide)
+    fun addPlaylistsToBottomSheetRecyclerView(listOfPlaylists: List<Playlist>) {
+        adapter?.playlists?.clear()
+        adapter?.playlists?.addAll(listOfPlaylists)
+        adapter?.notifyDataSetChanged()
     }
 
-    private fun convertTrackToPlayerTrack(track: Track): PlayerTrack {
-        return PlayerTrack(
-            trackId = track.trackId,
-            trackName = track.trackName,
-            artistName = track.artistName,
-            trackTime = track.trackTime,
-            artworkUrl = track.artworkUrl,
-            collectionName = track.collectionName,
-            releaseDate = track.releaseDate,
-            primaryGenreName = track.primaryGenreName,
-            country = track.country,
-            previewUrl = track.previewUrl,
-            insertionTimeStamp = null
-        )
+    private fun hideBottomNavigation(isHide: Boolean) {
+        bottomNavigationListener?.toggleBottomNavigationViewVisibility(!isHide)
     }
 
     private fun render(track: PlayerTrack) {

@@ -158,6 +158,24 @@
         <item name="android:textColorHint">@color/moderately_black</item>
         <item name="android:textColor">@color/moderately_black</item>
     </style>
+
+    <style name="BackgroundPlayerStyle">
+        <item name="android:background">@color/white</item>
+    </style>
     <!--/Styles for new playlist fragment screen-->
+
+    <!--Styles for playlist_bottom_sheet_view-->
+
+    <style name="PlaylistBottomSheetCommonTextViewStyle">
+        <item name="android:textColorHint">@color/saturated_grey</item>
+        <item name="android:textColor">@color/saturated_grey</item>
+    </style>
+
+    <style name="PlaylistBottomSheetModTextViewStyle">
+        <item name="android:textColorHint">@color/black</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <!--/Styles for playlist_bottom_sheet_view-->
 
 </resources>

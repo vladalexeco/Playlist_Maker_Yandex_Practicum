@@ -8,10 +8,16 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import ru.vladalexeco.playlistmaker.medialibrary.domain.db.PlaylistMediaDatabaseInteractor
+import ru.vladalexeco.playlistmaker.new_playlist.domain.db.PlaylistDatabaseInteractor
+import ru.vladalexeco.playlistmaker.new_playlist.domain.models.Playlist
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerDatabaseInteractor
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerInteractor
+import ru.vladalexeco.playlistmaker.player.domain.interfaces.PlaylistTrackDatabaseInteractor
 import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 import ru.vladalexeco.playlistmaker.player.presentation.state_classes.FavouriteTrackState
+import ru.vladalexeco.playlistmaker.player.presentation.state_classes.PlaylistTrackState
+import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -23,8 +29,17 @@ const val STATE_PAUSED = 3
 class PlayerViewModel(
     private val playerTrack: PlayerTrack,
     private val audioPlayerInteractor: AudioPlayerInteractor,
-    private val audioPlayerDatabaseInteractor: AudioPlayerDatabaseInteractor
+    private val audioPlayerDatabaseInteractor: AudioPlayerDatabaseInteractor,
+    private val playlistMediaDatabaseInteractor: PlaylistMediaDatabaseInteractor,
+    private val playlistTrackDatabaseInteractor: PlaylistTrackDatabaseInteractor,
+    private val playlistDatabaseInteractor: PlaylistDatabaseInteractor
     ): ViewModel() {
+
+    private val _checkIsTrackInPlaylist = MutableLiveData<PlaylistTrackState>()
+    val checkIsTrackInPlaylist: LiveData<PlaylistTrackState> = _checkIsTrackInPlaylist
+
+    private var _playlistsFromDatabase = MutableLiveData<List<Playlist>>()
+    var playlistsFromDatabase: LiveData<List<Playlist>> = _playlistsFromDatabase
 
     private var isFavourite = false
 
@@ -167,6 +182,73 @@ class PlayerViewModel(
     }
 
     fun checkValueFromIsFavourite(): Boolean = isFavourite
+
+    fun getPlaylists() {
+
+       viewModelScope.launch {
+           playlistMediaDatabaseInteractor
+               .getPlaylistsFromDatabase()
+               .collect { listOfPlaylists ->
+                   _playlistsFromDatabase.postValue(listOfPlaylists)
+               }
+       }
+
+    }
+
+    private fun insertTrackToDatabase(track: Track) {
+
+        viewModelScope.launch {
+            playlistTrackDatabaseInteractor.insertTrackToPlaylistTrackDatabase(track)
+        }
+
+    }
+
+    private fun returnPlaylistToDatabase(playlist:Playlist) {
+        viewModelScope.launch {
+            playlistDatabaseInteractor.insertPlaylistToDatabase(playlist)
+        }
+    }
+
+    private fun convertListToString(list: List<Int>): String {
+        if (list.isEmpty()) return ""
+
+        return list.joinToString(separator = ",")
+    }
+
+    private fun convertStringToList(string: String): ArrayList<Int> {
+        if (string.isEmpty()) return ArrayList<Int>()
+
+        return ArrayList<Int>(string.split(",").map { item -> item.toInt() })
+    }
+
+    fun checkAndAddTrackToPlaylist(playlist: Playlist, track: Track?) {
+        val listIdOfPlaylistTracks: ArrayList<Int> = convertStringToList(playlist.listOfTracksId)
+
+        if (!listIdOfPlaylistTracks.contains(track?.trackId)) {
+            track?.let { listIdOfPlaylistTracks.add(it.trackId) }
+            val listString = convertListToString(listIdOfPlaylistTracks)
+            val modifiedPlaylist: Playlist = playlist.copy(listOfTracksId = listString, amountOfTracks = playlist.amountOfTracks + 1)
+            returnPlaylistToDatabase(modifiedPlaylist)
+            track?.let { insertTrackToDatabase(it) }
+
+            _checkIsTrackInPlaylist.postValue(
+                PlaylistTrackState(
+                    nameOfPlaylist = playlist.name,
+                    trackIsInPlaylist = false
+                )
+            )
+        } else {
+
+            _checkIsTrackInPlaylist.postValue(
+                PlaylistTrackState(
+                    nameOfPlaylist = playlist.name,
+                    trackIsInPlaylist = true
+                )
+            )
+
+        }
+
+    }
 
     companion object {
         private const val UPDATE_TIME_INFO_MS = 300L

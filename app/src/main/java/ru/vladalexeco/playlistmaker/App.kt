@@ -2,21 +2,15 @@ package ru.vladalexeco.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.room.Room
 import com.markodevcic.peko.PermissionRequester
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import ru.vladalexeco.playlistmaker.database.PlaylistDatabase
 import ru.vladalexeco.playlistmaker.di.*
 
 const val SHARED_PREFERENCES = "SHARED_PREFERENCES"
 const val KEY_FOR_APP_THEME = "KEY_FOR_APP_THEME"
 const val BASE_URL = "http://itunes.apple.com"
 const val KEY_FOR_HISTORY_LIST = "KEY_FOR_HISTORY_LIST"
-const val KEY_FOR_PLAYER = "KEY_FOR_PLAYER"
-
 
 class App: Application() {
 
@@ -44,13 +38,6 @@ class App: Application() {
 
         switchTheme(sharedPreferences.getBoolean(KEY_FOR_APP_THEME, false))
 
-//        val db = Room.databaseBuilder(applicationContext, PlaylistDatabase::class.java, "playlist_database.db")
-//            .fallbackToDestructiveMigration()
-//            .build()
-
-//        GlobalScope.launch {
-//            db.playlistDao().clearTable()
-//        }
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {

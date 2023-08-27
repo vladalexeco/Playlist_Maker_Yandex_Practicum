@@ -1,6 +1,5 @@
 package ru.vladalexeco.playlistmaker.medialibrary.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -71,6 +70,7 @@ class MedialibraryFavouritesFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.fillData()
+        isClickAllowed = true
     }
 
     private fun clickDebounce(): Boolean {

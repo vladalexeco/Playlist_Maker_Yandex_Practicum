@@ -1,7 +1,6 @@
 package ru.vladalexeco.playlistmaker.medialibrary.ui
 
 import android.os.Bundle
-import android.text.BoringLayout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

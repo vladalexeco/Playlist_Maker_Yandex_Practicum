@@ -1,6 +1,8 @@
 package ru.vladalexeco.playlistmaker.search.domain.models
 
 import com.google.gson.annotations.SerializedName
+import ru.vladalexeco.playlistmaker.database.entity.PlaylistTrackEntity
+import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 import java.io.Serializable
 
 data class Track(
@@ -15,3 +17,23 @@ data class Track(
     val country: String?,
     val previewUrl: String?
 ): Serializable
+
+fun Track.mapToPlaylistTrackEntity(): PlaylistTrackEntity {
+    return PlaylistTrackEntity(
+        trackId,
+        trackName,
+        artistName,
+        trackTime,
+        artworkUrl,
+        collectionName,
+        releaseDate,
+        primaryGenreName,
+        country,
+        previewUrl,
+        System.currentTimeMillis()
+    )
+}
+
+fun Track.mapToPlayerTrack(): PlayerTrack {
+    return PlayerTrack(trackId, trackName, artistName, trackTime, artworkUrl, collectionName, releaseDate, primaryGenreName, country, previewUrl, null)
+}

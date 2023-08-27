@@ -1,6 +1,5 @@
 package ru.vladalexeco.playlistmaker.new_playlist.ui
 
-import android.Manifest
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -25,11 +24,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.markodevcic.peko.PermissionRequester
-import com.markodevcic.peko.PermissionResult
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
 import ru.vladalexeco.playlistmaker.databinding.FragmentNewPlaylistBinding
 import ru.vladalexeco.playlistmaker.new_playlist.presentation.NewPlaylistViewModel
 import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
@@ -45,8 +40,6 @@ class NewPlaylistFragment : Fragment() {
     private lateinit var binding: FragmentNewPlaylistBinding
 
     private val viewModel: NewPlaylistViewModel by viewModel()
-
-    private val requester = PermissionRequester.instance()
 
     private var imageIsLoaded = false
 
@@ -135,47 +128,7 @@ class NewPlaylistFragment : Fragment() {
         }
 
         loadImageImageView.setOnClickListener {
-
-            viewLifecycleOwner.lifecycleScope.launch {
-                requester.request(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ).collect { result ->
-                    when(result) {
-                        is PermissionResult.Granted -> {} // Пользователь дал разрешение, можно продолжать работу
-
-                        is PermissionResult.Denied -> {
-
-                            Toast.makeText(
-                                requireContext(),
-                                "Разрешение требуется, что вы могли загружать обложки для своих плейлистов",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-//                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                            intent.data= Uri.fromParts("package", context?.packageName ?: "", null)
-//                            context?.startActivity(intent)
-
-                        }// Пользователь отказал в предоставлении разрешения
-
-                        is PermissionResult.Cancelled -> {
-
-                            Toast.makeText(requireContext(), "Canceled", Toast.LENGTH_SHORT).show()
-
-                        }// Запрос на разрешение отменён
-                    }
-                }
-            }
-
-            val granted = requester.areGranted(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
-
-            if (granted) {
-                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            }
-
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
         newPlayListButton.setOnClickListener {
