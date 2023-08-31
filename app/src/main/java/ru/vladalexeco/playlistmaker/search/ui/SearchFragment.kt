@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,11 +40,6 @@ class SearchFragment: Fragment() {
     var textFromSearchWidget = ""
 
     private val viewModel: SearchingViewModel by viewModel()
-
-    companion object {
-        const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
 
     private var isClickAllowed = true
 
@@ -237,7 +231,6 @@ class SearchFragment: Fragment() {
 
     private fun clickToTrackList(track: Track) {
         viewModel.addTrackToHistoryList(track)
-        Log.d("TAG", "You are here")
         findNavController().navigate(
             R.id.action_searchFragment_to_playerFragment,
             PlayerFragment.createArgs(track)
@@ -329,5 +322,10 @@ class SearchFragment: Fragment() {
         } else {
             bottomNavigationListener?.toggleBottomNavigationViewVisibility(true)
         }
+    }
+
+    companion object {
+        const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

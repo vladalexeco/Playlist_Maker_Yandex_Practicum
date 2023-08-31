@@ -23,12 +23,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
-import com.markodevcic.peko.PermissionRequester
 import kotlinx.coroutines.launch
 import ru.vladalexeco.playlistmaker.databinding.FragmentNewPlaylistBinding
 import ru.vladalexeco.playlistmaker.new_playlist.presentation.NewPlaylistViewModel
 import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.new_playlist.domain.models.Playlist
 import java.io.File
 import java.io.FileOutputStream
@@ -111,7 +111,6 @@ class NewPlaylistFragment : Fragment() {
 
         val pickMedia =
             registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-                //обрабатываем событие выбора пользователем фотографии
                 if (uri != null) {
                     loadImageImageView.scaleType = ImageView.ScaleType.CENTER_CROP
                     loadImageImageView.setImageURI(uri)
@@ -151,7 +150,9 @@ class NewPlaylistFragment : Fragment() {
 
             uriOfImage?.let { saveImageToPrivateStorage(uri = it, nameOfFile = filepath) }
 
-            Toast.makeText(requireContext(), "Плейлист $name успешно добавлен", Toast.LENGTH_SHORT).show()
+            val toastPhrase = getString(R.string.add_playlist) + " $name"
+
+            Toast.makeText(requireContext(), toastPhrase, Toast.LENGTH_SHORT).show()
 
             findNavController().navigateUp()
         }
@@ -189,12 +190,12 @@ class NewPlaylistFragment : Fragment() {
 
     private fun showDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Завершить создание плейлиста?")
-            .setMessage("Все несохраненные данные будут потеряны")
-            .setNeutralButton("Отмена") { dialog, which ->
+            .setTitle(getString(R.string.complete_playlist))
+            .setMessage(getString(R.string.data_lost))
+            .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
 
             }
-            .setPositiveButton("Завершить") { dialog, which ->
+            .setPositiveButton(getString(R.string.complete)) { dialog, which ->
                 findNavController().navigateUp()
             }
             .show()

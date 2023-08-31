@@ -242,9 +242,11 @@ class PlayerFragment : Fragment() {
         viewModel.checkIsTrackInPlaylist.observe(viewLifecycleOwner) { playlistTrackState ->
             if (allowToEmit) {
                 if (playlistTrackState.trackIsInPlaylist) {
-                    Toast.makeText(requireContext(), "Это трек ранее уже был добавлен в плейлист ${playlistTrackState.nameOfPlaylist}", Toast.LENGTH_SHORT).show()
+                    val toastPhrase = getString(R.string.track_already_added) + " ${playlistTrackState.nameOfPlaylist}"
+                    Toast.makeText(requireContext(), toastPhrase, Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "Трек добавлен в плейлист ${playlistTrackState.nameOfPlaylist}", Toast.LENGTH_SHORT).show()
+                    val toastPhrase = getString(R.string.track_added) + " ${playlistTrackState.nameOfPlaylist}"
+                    Toast.makeText(requireContext(), toastPhrase, Toast.LENGTH_SHORT).show()
                     viewModel.getPlaylists()
                     bottomSheetBehavior?.state = BottomSheetBehavior.STATE_HIDDEN
                 }

@@ -2,7 +2,6 @@ package ru.vladalexeco.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.markodevcic.peko.PermissionRequester
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import ru.vladalexeco.playlistmaker.di.*
@@ -31,8 +30,6 @@ class App: Application() {
                 newPlayListModule
             )
         }
-
-        PermissionRequester.initialize(applicationContext)
 
         val sharedPreferences = getSharedPreferences(SHARED_PREFERENCES, MODE_PRIVATE)
 
