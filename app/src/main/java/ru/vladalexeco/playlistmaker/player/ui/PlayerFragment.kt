@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -135,6 +136,14 @@ class PlayerFragment : Fragment() {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
 
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+
+            override fun handleOnBackPressed() {
+                findNavController().navigateUp()
+            }
+
+        })
+
         bottomSheetBehavior!!.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -157,6 +166,7 @@ class PlayerFragment : Fragment() {
         }
 
         createPlaylistButton.setOnClickListener {
+            viewModel.release()
             findNavController().navigate(R.id.action_playerFragment_to_newPlaylistFragment)
         }
 
@@ -187,6 +197,9 @@ class PlayerFragment : Fragment() {
         track = requireArguments().getSerializableExtra(CURRENT_TRACK, Track::class.java)
 
         playerTrack = track!!.mapToPlayerTrack()
+
+        viewModel.preparePlayer()
+        viewModel.assignValToPlayerTrackForRender()
 
         if (playerTrack.previewUrl == null) {
             playButton.isEnabled = false
@@ -233,12 +246,13 @@ class PlayerFragment : Fragment() {
                 } else {
                     Toast.makeText(requireContext(), "Трек добавлен в плейлист ${playlistTrackState.nameOfPlaylist}", Toast.LENGTH_SHORT).show()
                     viewModel.getPlaylists()
+                    bottomSheetBehavior?.state = BottomSheetBehavior.STATE_HIDDEN
                 }
-
-                bottomSheetBehavior?.state = BottomSheetBehavior.STATE_HIDDEN
             }
 
         }
+
+        viewModel.allowToCleanTimer = true
 
     }
 
@@ -247,15 +261,13 @@ class PlayerFragment : Fragment() {
         viewModel.pause()
     }
 
-    override fun onDestroy() {
-        viewModel.release()
-        super.onDestroy()
-    }
-
     override fun onResume() {
         super.onResume()
         hideBottomNavigation(true)
         viewModel.getPlaylists()
+        if (viewModel.allowToCleanTimer) {
+            durationInTime.text = "00:00"
+        }
     }
 
     override fun onStop() {

@@ -35,6 +35,8 @@ class PlayerViewModel(
     private val playlistDatabaseInteractor: PlaylistDatabaseInteractor
     ): ViewModel() {
 
+    var allowToCleanTimer = true
+
     private val _checkIsTrackInPlaylist = MutableLiveData<PlaylistTrackState>()
     val checkIsTrackInPlaylist: LiveData<PlaylistTrackState> = _checkIsTrackInPlaylist
 
@@ -51,11 +53,6 @@ class PlayerViewModel(
     private val _favouriteTrack = MutableLiveData<FavouriteTrackState>()
     val favouriteTrack: LiveData<FavouriteTrackState> = _favouriteTrack
 
-    init {
-        preparePlayer()
-        assignValToPlayerTrackForRender()
-    }
-
     private val _isCompleted = MutableLiveData(false)
     val isCompleted: LiveData<Boolean> = _isCompleted
 
@@ -65,7 +62,7 @@ class PlayerViewModel(
     private val _formattedTime =  MutableLiveData("00:00")
     val formattedTime: LiveData<String> = _formattedTime
 
-    private fun assignValToPlayerTrackForRender() {
+    fun assignValToPlayerTrackForRender() {
         val playerTrackTo = playerTrack.copy(
             artworkUrl = playerTrack.artworkUrl?.replaceAfterLast('/', "512x512bb.jpg"),
             releaseDate = playerTrack.releaseDate?.split("-", limit=2)?.get(0),
@@ -80,6 +77,7 @@ class PlayerViewModel(
         _playerState.postValue(STATE_PLAYING)
         startTimer()
         _isCompleted.postValue(false)
+        allowToCleanTimer = false
     }
 
     fun pause() {
@@ -100,7 +98,7 @@ class PlayerViewModel(
         }
     }
 
-    private fun preparePlayer() {
+    fun preparePlayer() {
         audioPlayerInteractor.prepare(
             callbackPrep = {
                 _playerState.postValue(STATE_PREPARED)
