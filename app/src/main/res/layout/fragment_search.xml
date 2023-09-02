@@ -123,7 +123,7 @@
                 tools:text="Проблемы со связью \n\nЗагрузка не удалась. Проверьте подключение к интернету"/>
 
             <Button
-                android:id="@+id/update_button"
+                android:id="@+id/create_playlist_button"
                 style="@style/SearchingActivityButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

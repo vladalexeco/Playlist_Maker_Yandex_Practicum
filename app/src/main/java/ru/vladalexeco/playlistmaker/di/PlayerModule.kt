@@ -7,13 +7,17 @@ import org.koin.dsl.module
 import ru.vladalexeco.playlistmaker.player.data.converters.PlayerTrackDbConverter
 import ru.vladalexeco.playlistmaker.player.data.repository.AudioPlayerDatabaseRepositoryImpl
 import ru.vladalexeco.playlistmaker.player.data.repository.AudioPlayerRepositoryImpl
+import ru.vladalexeco.playlistmaker.player.data.repository.PlaylistTrackDatabaseRepositoryImpl
 import ru.vladalexeco.playlistmaker.player.domain.converters.PlayerTrackDataConverter
 import ru.vladalexeco.playlistmaker.player.domain.interactors.AudioPlayerDatabaseInteractorImpl
 import ru.vladalexeco.playlistmaker.player.domain.interactors.AudioPlayerInteractorImpl
+import ru.vladalexeco.playlistmaker.player.domain.interactors.PlaylistTrackDatabaseInteractorImpl
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerDatabaseInteractor
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerDatabaseRepository
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerInteractor
 import ru.vladalexeco.playlistmaker.player.domain.interfaces.AudioPlayerRepository
+import ru.vladalexeco.playlistmaker.player.domain.interfaces.PlaylistTrackDatabaseInteractor
+import ru.vladalexeco.playlistmaker.player.domain.interfaces.PlaylistTrackDatabaseRepository
 import ru.vladalexeco.playlistmaker.player.domain.models.PlayerTrack
 import ru.vladalexeco.playlistmaker.player.presentation.PlayerViewModel
 
@@ -33,7 +37,10 @@ val playerModule = module {
         PlayerViewModel(
             playerTrack = playerTrack,
             audioPlayerInteractor = get { parametersOf(playerTrack) },
-            audioPlayerDatabaseInteractor = get()
+            audioPlayerDatabaseInteractor = get(),
+            playlistMediaDatabaseInteractor = get(),
+            playlistTrackDatabaseInteractor = get(),
+            playlistDatabaseInteractor = get()
         )
     }
 
@@ -47,6 +54,14 @@ val playerModule = module {
 
     single<AudioPlayerDatabaseInteractor> {
         AudioPlayerDatabaseInteractorImpl(audioPlayerDatabaseRepository = get(), playerTrackDataConverter = get())
+    }
+
+    single<PlaylistTrackDatabaseRepository> {
+        PlaylistTrackDatabaseRepositoryImpl(playlistTrackDatabase = get())
+    }
+
+    single<PlaylistTrackDatabaseInteractor> {
+        PlaylistTrackDatabaseInteractorImpl(playlistTrackDatabaseRepository = get())
     }
 }
 

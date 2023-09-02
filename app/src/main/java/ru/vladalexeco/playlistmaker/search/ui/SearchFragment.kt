@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.delay
@@ -21,10 +22,9 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent.setEventListener
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.vladalexeco.playlistmaker.KEY_FOR_PLAYER
 import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.databinding.FragmentSearchBinding
-import ru.vladalexeco.playlistmaker.player.ui.PlayerActivity
+import ru.vladalexeco.playlistmaker.player.ui.PlayerFragment
 import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.search.presentation.SearchingViewModel
@@ -41,16 +41,11 @@ class SearchFragment: Fragment() {
 
     private val viewModel: SearchingViewModel by viewModel()
 
-    companion object {
-        const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
-        private const val CLICK_DEBOUNCE_DELAY = 1000L
-    }
-
     private var isClickAllowed = true
 
     private val adapter = TrackAdapter {
         if (clickDebounce()) {
-            clickToTrackList(it)
+            clickToTrackList(track = it)
         }
     }
 
@@ -65,7 +60,6 @@ class SearchFragment: Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var notFoundWidget: LinearLayout
     private lateinit var badConnectionWidget: LinearLayout
-    private lateinit var updateButton: Button
     private lateinit var badConnectionTextView: TextView
     private lateinit var historyWidget: LinearLayout
     private lateinit var historyRecyclerView: RecyclerView
@@ -104,7 +98,6 @@ class SearchFragment: Fragment() {
         clearButton = binding.clearIcon
         notFoundWidget = binding.notFoundWidget
         badConnectionWidget = binding.badConnectionWidget
-        updateButton = binding.updateButton
         badConnectionTextView = binding.badConnection
         historyWidget = binding.historyWidget
         clearHistoryButton = binding.clearHistoryButton
@@ -150,10 +143,6 @@ class SearchFragment: Fragment() {
             adapter.tracks.clear()
             adapter.notifyDataSetChanged()
             inputMethodManager.hideSoftInputFromWindow(inputEditText.windowToken, 0)
-        }
-
-        updateButton.setOnClickListener {
-            viewModel.searchRequest(inputEditText.text.toString())
         }
 
         val textWatcher = object : TextWatcher {
@@ -209,6 +198,11 @@ class SearchFragment: Fragment() {
         viewModel.saveHistoryList()
     }
 
+    override fun onResume() {
+        super.onResume()
+        isClickAllowed = true
+    }
+
 
     override fun onDestroyView() {
         viewModel.onDestroy()
@@ -237,18 +231,19 @@ class SearchFragment: Fragment() {
 
     private fun clickToTrackList(track: Track) {
         viewModel.addTrackToHistoryList(track)
-
-        val intent = Intent(requireContext(), PlayerActivity::class.java)
-        intent.putExtra(KEY_FOR_PLAYER, track)
-        startActivity(intent)
+        findNavController().navigate(
+            R.id.action_searchFragment_to_playerFragment,
+            PlayerFragment.createArgs(track)
+        )
     }
 
     private fun clickToHistoryTrackList(track: Track) {
         viewModel.transferTrackToTop(track)
 
-        val intent = Intent(requireContext(), PlayerActivity::class.java)
-        intent.putExtra(KEY_FOR_PLAYER, track)
-        startActivity(intent)
+        findNavController().navigate(
+            R.id.action_searchFragment_to_playerFragment,
+            PlayerFragment.createArgs(track)
+        )
     }
 
     private fun showPlaceholder(flag: Boolean?, message: String = "") {
@@ -327,5 +322,10 @@ class SearchFragment: Fragment() {
         } else {
             bottomNavigationListener?.toggleBottomNavigationViewVisibility(true)
         }
+    }
+
+    companion object {
+        const val EDIT_TEXT_VALUE = "EDIT_TEXT_VALUE"
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

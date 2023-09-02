@@ -134,4 +134,35 @@
 
     <!--/Styles for bottom menu-->
 
+    <!--Styles for new playlist fragment screen-->
+
+    <style name="EditTextNewPlaylistStyle">
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+
+    <style name="TextInputLayoutStyleNewPlaylist" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="BackgroundPlayerStyle">
+        <item name="android:background">@color/moderately_black</item>
+    </style>
+
+    <!--/Styles for new playlist fragment screen-->
+
+    <!--Styles for playlist_bottom_sheet_view-->
+
+    <style name="PlaylistBottomSheetCommonTextViewStyle">
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="PlaylistBottomSheetModTextViewStyle">
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <!--/Styles for playlist_bottom_sheet_view-->
+
 </resources>
