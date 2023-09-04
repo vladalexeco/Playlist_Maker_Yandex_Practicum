@@ -1,6 +1,7 @@
 package ru.vladalexeco.playlistmaker.new_playlist.domain.models
 
 import ru.vladalexeco.playlistmaker.database.entity.PlaylistEntity
+import java.io.Serializable
 
 data class Playlist(
     val id: Long = 0,
@@ -9,7 +10,7 @@ data class Playlist(
     val filePath: String,
     val listOfTracksId: String = "",
     val amountOfTracks: Int
-)
+) : Serializable
 
 fun Playlist.mapToPlaylistEntity(): PlaylistEntity = PlaylistEntity(
     id = id,
