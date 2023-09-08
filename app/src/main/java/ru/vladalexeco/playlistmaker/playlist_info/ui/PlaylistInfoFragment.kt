@@ -1,7 +1,11 @@
 package ru.vladalexeco.playlistmaker.playlist_info.ui
 
 import android.content.Context
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,21 +14,35 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import ru.vladalexeco.playlistmaker.databinding.FragmentPlaylistInfoBinding
 import ru.vladalexeco.playlistmaker.playlist_info.presentation.PlaylistInfoViewModel
 import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.new_playlist.domain.models.Playlist
+import ru.vladalexeco.playlistmaker.playlist_info.presentation.containers.PlaylistInfoContainer
+import ru.vladalexeco.playlistmaker.search.ui.TrackAdapter
+import java.io.File
+import java.io.Serializable
 
 class PlaylistInfoFragment : Fragment() {
 
     private var bottomNavigationListener: BottomNavigationListener? = null
 
     private lateinit var binding: FragmentPlaylistInfoBinding
+
+    var playlist: Playlist? = null
+
+    val adapter = TrackAdapter {
+
+    }
 
     private val viewModel: PlaylistInfoViewModel by viewModel()
 
@@ -66,6 +84,16 @@ class PlaylistInfoFragment : Fragment() {
         bottomNavigationListener = null
     }
 
+    override fun onResume() {
+        super.onResume()
+        hideBottomNavigation(true)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        hideBottomNavigation(false)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -103,6 +131,21 @@ class PlaylistInfoFragment : Fragment() {
         editPlaylistBottomSheetFrameLayout = binding.editPlaylistFramelayout
         deletePlaylistBottomSheetFrameLayout = binding.deletePlaylistFramelayout
 
+        // recycler view
+        playlistInfoBottomSheetRecyclerView.adapter = adapter
+        playlistInfoBottomSheetRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(playlistMenuBottomSheetLinearLayout).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        playlist = requireArguments().getSerializableExtra(CURRENT_PLAYLIST, Playlist::class.java)
+
+
+        //rendering
+        renderWithSerializableData()
+        viewModel.getTracksFromDatabaseForCurrentPlaylist(viewModel.convertStringToList(playlist!!.listOfTracksId))
+
 
         // Слушатели кнопок
         backArrowImageView.setOnClickListener {
@@ -137,6 +180,63 @@ class PlaylistInfoFragment : Fragment() {
 
         })
 
+        //Observers
+        viewModel.tracksForCurrentPlaylist.observe(viewLifecycleOwner) {playlistInfoContainer ->
+            renderWithDatabaseData(playlistInfoContainer)
+        }
+
+    }
+
+    //Private functions
+    private fun renderWithSerializableData() {
+        if (playlist != null) {
+
+            if (playlist!!.filePath.isNotEmpty()) {
+                playlistCoverImageView.scaleType = ImageView.ScaleType.CENTER_CROP
+                playlistCoverImageView.setImageURI(getUriOfImageFromStorage(playlist!!.filePath))
+
+                playlistCoverBottomSheetImageView.setImageURI(getUriOfImageFromStorage(playlist!!.filePath))
+            } else {
+                playlistCoverImageView.setImageResource(R.drawable.track_placeholder_max)
+                playlistCoverBottomSheetImageView.setImageResource(R.drawable.placeholder_playlist)
+            }
+
+            nameOfPlaylistTextView.text = playlist!!.name
+            yearOfPlaylistCreationTextView.text = viewModel.getYearFromPlaylist(playlist!!.insertTimeStamp)
+            totalNumberOfTracksTextView.text = viewModel.pluralizeWord(playlist!!.amountOfTracks, "трек")
+
+            nameOfPlaylistBottomSheetTextView.text = playlist!!.name
+            totalNumberOfTracksBottomSheetTextView.text = viewModel.pluralizeWord(playlist!!.amountOfTracks, "трек")
+
+        } else {
+            Log.d("DEBUG", "playlist is null")
+        }
+    }
+
+    private fun renderWithDatabaseData(playlistInfoContainer: PlaylistInfoContainer) {
+
+        adapter.tracks.clear()
+        adapter.tracks.addAll(playlistInfoContainer.playlistTracks)
+        adapter.notifyDataSetChanged()
+
+        totalAmountOfMinutesTextView.text = playlistInfoContainer.totalTime
+    }
+
+    private fun <T : Serializable?> Bundle.getSerializableExtra(key: String, m_class: Class<T>): T {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            this.getSerializable(key, m_class)!!
+        else
+            this.getSerializable(key) as T
+    }
+
+    private fun getUriOfImageFromStorage(fileName: String): Uri {
+        val filePath = File(requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "myalbum")
+        val file = File(filePath, fileName)
+        return file.toUri()
+    }
+
+    private fun hideBottomNavigation(isHide: Boolean) {
+        bottomNavigationListener?.toggleBottomNavigationViewVisibility(!isHide)
     }
 
     companion object {

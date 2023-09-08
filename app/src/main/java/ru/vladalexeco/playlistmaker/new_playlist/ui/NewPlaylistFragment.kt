@@ -141,7 +141,8 @@ class NewPlaylistFragment : Fragment() {
                 description = editDescriptionEditText.text.toString(),
                 filePath = filepath,
                 listOfTracksId = "",
-                amountOfTracks = 0
+                amountOfTracks = 0,
+                insertTimeStamp = System.currentTimeMillis()
             )
 
             viewLifecycleOwner.lifecycleScope.launch {

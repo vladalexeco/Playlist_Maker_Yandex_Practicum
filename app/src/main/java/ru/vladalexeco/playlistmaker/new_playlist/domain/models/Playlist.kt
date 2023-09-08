@@ -9,7 +9,8 @@ data class Playlist(
     val description: String,
     val filePath: String,
     val listOfTracksId: String = "",
-    val amountOfTracks: Int
+    val amountOfTracks: Int,
+    val insertTimeStamp: Long? = 0L
 ) : Serializable
 
 fun Playlist.mapToPlaylistEntity(): PlaylistEntity = PlaylistEntity(
@@ -18,7 +19,8 @@ fun Playlist.mapToPlaylistEntity(): PlaylistEntity = PlaylistEntity(
     description = description,
     filePath = filePath,
     listOfTracksId = listOfTracksId,
-    amountOfTracks = amountOfTracks
+    amountOfTracks = amountOfTracks,
+    insertTimeStamp = insertTimeStamp
 )
 
 fun PlaylistEntity.mapToPlaylist(): Playlist = Playlist(
@@ -27,6 +29,7 @@ fun PlaylistEntity.mapToPlaylist(): Playlist = Playlist(
     description = description,
     filePath = filePath,
     listOfTracksId = listOfTracksId,
-    amountOfTracks = amountOfTracks
+    amountOfTracks = amountOfTracks,
+    insertTimeStamp = insertTimeStamp
 )
 
