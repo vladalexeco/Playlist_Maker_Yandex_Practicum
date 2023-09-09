@@ -19,7 +19,12 @@ val playlistInfoModule = module {
     }
 
     viewModel {
-        PlaylistInfoViewModel(currentPlaylistTracksDatabaseInteractor = get())
+        PlaylistInfoViewModel(
+            currentPlaylistTracksDatabaseInteractor = get(),
+            playlistDatabaseInteractor = get(),
+            playlistTrackDatabaseInteractor = get(),
+            playlistMediaDatabaseInteractor = get()
+        )
     }
 
 }

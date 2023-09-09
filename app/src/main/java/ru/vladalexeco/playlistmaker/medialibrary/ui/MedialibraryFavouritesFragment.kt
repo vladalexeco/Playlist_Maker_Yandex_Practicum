@@ -50,9 +50,7 @@ class MedialibraryFavouritesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = LibraryTrackAdapter { libraryTrack ->
-            if (clickDebounce()) {
-                clickOnItem(libraryTrack)
-            }
+            clickOnItem(libraryTrack)
         }
 
         emptyLibraryPlaceholder = binding.emptyLibraryPlaceholder

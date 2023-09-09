@@ -21,13 +21,16 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ru.vladalexeco.playlistmaker.databinding.FragmentPlaylistInfoBinding
 import ru.vladalexeco.playlistmaker.playlist_info.presentation.PlaylistInfoViewModel
 import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.new_playlist.domain.models.Playlist
+import ru.vladalexeco.playlistmaker.player.ui.PlayerFragment
 import ru.vladalexeco.playlistmaker.playlist_info.presentation.containers.PlaylistInfoContainer
+import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.search.ui.TrackAdapter
 import java.io.File
 import java.io.Serializable
@@ -40,11 +43,18 @@ class PlaylistInfoFragment : Fragment() {
 
     var playlist: Playlist? = null
 
-    val adapter = TrackAdapter {
+    private val onLongClickAction = fun(track:Track): Boolean {
+        showDeleteTrackDialog(track)
+        return true
+    }
 
+    val adapter = TrackAdapter(onLongClickAction) { track ->
+        onClickItem(track)
     }
 
     private val viewModel: PlaylistInfoViewModel by viewModel()
+
+    var currentAmountOfTracks: Int? = null
 
     // Виджеты основного экрана
     private lateinit var backArrowImageView: ImageView
@@ -153,7 +163,13 @@ class PlaylistInfoFragment : Fragment() {
         }
 
         sharePlaylistImageView.setOnClickListener {
+            if (playlist != null) {
+                if (playlist!!.listOfTracksId.isEmpty()) {
+                    showShareEmptyPlaylistDialog()
+                } else {
 
+                }
+            }
         }
 
         menuOfPlaylistImageView.setOnClickListener {
@@ -188,8 +204,69 @@ class PlaylistInfoFragment : Fragment() {
     }
 
     //Private functions
+    private fun showDeleteTrackDialog(track:Track) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage(getString(R.string.delete_track_message))
+            .setNeutralButton(getString(R.string.no)) { dialog, which ->
+
+            }
+            .setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                deleteTrackFromPlaylist(track)
+            }
+            .show()
+    }
+
+    private fun showShareEmptyPlaylistDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage(getString(R.string.share_empty_playlist))
+            .setPositiveButton(getString(R.string.ok)) { dialog, which ->
+            }
+            .show()
+    }
+
+    private fun showDeletePlaylistDialog() {
+
+    }
+
+    private fun deleteTrackFromPlaylist(track:Track) {
+
+        val listStringOfTrackIds: String? = playlist?.listOfTracksId
+        val listOfTrackIds = listStringOfTrackIds?.let { viewModel.convertStringToList(it) }
+
+        listOfTrackIds?.remove(track.trackId)
+
+        val newListStringOfTrackIds = listOfTrackIds?.let {viewModel.convertListToString(listOfTrackIds)}
+
+        val updatedPlaylist = newListStringOfTrackIds?.let { playlist?.copy(listOfTracksId = it, amountOfTracks = playlist!!.amountOfTracks - 1)}
+
+        playlist = updatedPlaylist
+
+        if (updatedPlaylist != null) {
+            viewModel.updatePlaylist(updatedPlaylist)
+        }
+
+        viewModel.checkAndDeleteTrackFromPlaylistTrackDatabase(track)
+
+        if (listOfTrackIds != null) {
+            viewModel.getTracksFromDatabaseForCurrentPlaylist(listOfTrackIds)
+        }
+
+        totalNumberOfTracksTextView.text =
+            playlist?.let { viewModel.pluralizeWord(it.amountOfTracks, "трек") }
+
+    }
+
+    private fun onClickItem(track: Track) {
+        findNavController().navigate(
+            R.id.action_playlistInfoFragment_to_playerFragment,
+            PlayerFragment.createArgs(track)
+        )
+    }
+
     private fun renderWithSerializableData() {
         if (playlist != null) {
+
+            currentAmountOfTracks = playlist!!.amountOfTracks
 
             if (playlist!!.filePath.isNotEmpty()) {
                 playlistCoverImageView.scaleType = ImageView.ScaleType.CENTER_CROP
@@ -242,7 +319,7 @@ class PlaylistInfoFragment : Fragment() {
     companion object {
         private const val CURRENT_PLAYLIST = "CURRENT_PLAYLIST"
 
-        fun createArgs(playlist: Playlist): Bundle {
+         fun createArgs(playlist: Playlist): Bundle {
             return bundleOf(CURRENT_PLAYLIST to playlist)
         }
     }

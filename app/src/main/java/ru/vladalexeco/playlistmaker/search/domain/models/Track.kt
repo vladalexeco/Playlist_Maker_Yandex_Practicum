@@ -19,7 +19,10 @@ data class Track(
     val insertTimeStamp: Long? = null
 ): Serializable
 
-fun Track.mapToPlaylistTrackEntity(): PlaylistTrackEntity {
+fun Track.mapToPlaylistTrackEntity(newTimeStamp: Boolean = true): PlaylistTrackEntity {
+
+    val timeStamp = if (newTimeStamp) System.currentTimeMillis() else this.insertTimeStamp
+
     return PlaylistTrackEntity(
         trackId,
         trackName,
@@ -31,7 +34,7 @@ fun Track.mapToPlaylistTrackEntity(): PlaylistTrackEntity {
         primaryGenreName,
         country,
         previewUrl,
-        System.currentTimeMillis()
+        insertTimeStamp = timeStamp
     )
 }
 

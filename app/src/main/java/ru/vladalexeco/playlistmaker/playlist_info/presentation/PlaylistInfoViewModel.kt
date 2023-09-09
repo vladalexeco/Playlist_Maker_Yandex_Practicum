@@ -5,16 +5,28 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.vladalexeco.playlistmaker.medialibrary.domain.db.PlaylistMediaDatabaseInteractor
+import ru.vladalexeco.playlistmaker.new_playlist.domain.db.PlaylistDatabaseInteractor
+import ru.vladalexeco.playlistmaker.new_playlist.domain.models.Playlist
+import ru.vladalexeco.playlistmaker.player.domain.interfaces.PlaylistTrackDatabaseInteractor
 import ru.vladalexeco.playlistmaker.playlist_info.domain.db.CurrentPlaylistTracksDatabaseInteractor
 import ru.vladalexeco.playlistmaker.playlist_info.presentation.containers.PlaylistInfoContainer
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
-import java.util.ArrayList
 import java.util.Date
+import kotlin.collections.ArrayList
 
 class PlaylistInfoViewModel(
-    private val currentPlaylistTracksDatabaseInteractor: CurrentPlaylistTracksDatabaseInteractor
-) : ViewModel() {
+
+    private val currentPlaylistTracksDatabaseInteractor: CurrentPlaylistTracksDatabaseInteractor,
+    private val playlistDatabaseInteractor: PlaylistDatabaseInteractor,
+    private val playlistTrackDatabaseInteractor: PlaylistTrackDatabaseInteractor,
+    private val playlistMediaDatabaseInteractor: PlaylistMediaDatabaseInteractor
+
+
+    ) : ViewModel() {
+
+    val listOfCurrentTracks = ArrayList<Track>()
 
     private val _tracksForCurrentPlaylist = MutableLiveData<PlaylistInfoContainer>()
     val tracksForCurrentPlaylist: LiveData<PlaylistInfoContainer> = _tracksForCurrentPlaylist
@@ -42,6 +54,36 @@ class PlaylistInfoViewModel(
         }
     }
 
+    fun checkAndDeleteTrackFromPlaylistTrackDatabase(track: Track) {
+        viewModelScope.launch {
+            playlistMediaDatabaseInteractor
+                .getPlaylistsFromDatabase()
+                .collect { listOfPlaylists ->
+                    for (playlist in listOfPlaylists) {
+                        val listsOfTrackIds = convertStringToList(playlist.listOfTracksId)
+                        if (listsOfTrackIds.contains(track.trackId)) {
+                            return@collect
+                        }
+                    }
+
+                    deleteTrackFromPlaylistTrackDatabase(track)
+
+                }
+        }
+    }
+
+    fun updatePlaylist(playlist: Playlist) {
+        viewModelScope.launch {
+            playlistDatabaseInteractor.insertPlaylistToDatabase(playlist)
+        }
+    }
+
+    fun deleteTrackFromPlaylistTrackDatabase(track: Track) {
+        viewModelScope.launch {
+            playlistTrackDatabaseInteractor.deletePlaylistTrackFromDatabase(track)
+        }
+    }
+
     fun getYearFromPlaylist(millis: Long?): String {
         return if (millis != null) {
             val dateFormat = SimpleDateFormat("yyyy")
@@ -49,6 +91,12 @@ class PlaylistInfoViewModel(
         } else {
             ""
         }
+    }
+
+    fun convertListToString(list: List<Int>): String {
+        if (list.isEmpty()) return ""
+
+        return list.joinToString(separator = ",")
     }
 
     fun convertStringToList(string: String): ArrayList<Int> {
@@ -60,8 +108,10 @@ class PlaylistInfoViewModel(
     fun pluralizeWord(number: Int, word: String): String {
         return when {
             number % 10 == 1 && number % 100 != 11 -> "$number $word"
-            number % 10 in 2..4 && (number % 100 < 10 || number % 100 >= 20) -> "$number $word${if (word.endsWith('а')) "и" else "а"}"
-            else -> if (word.endsWith('а')) "$number ${word.dropLast(1)}" else "$number ${word}ов"
+            number % 10 in 2..4 && (number % 100 < 10 || number % 100 >= 20) ->
+                if (word.endsWith('а')) "$number ${word.dropLast(1)}ы" else "$number ${word}а"
+            else ->
+                if (word.endsWith('а')) "$number ${word.dropLast(1)}" else "$number ${word}ов"
         }
     }
 

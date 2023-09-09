@@ -10,4 +10,8 @@ class PlaylistTrackDatabaseInteractorImpl(
     override suspend fun insertTrackToPlaylistTrackDatabase(track: Track) {
         playlistTrackDatabaseRepository.insertTrackToPlaylistTrackDatabase(track)
     }
+
+    override suspend fun deletePlaylistTrackFromDatabase(track: Track) {
+        playlistTrackDatabaseRepository.deletePlaylistTrackFromDatabase(track)
+    }
 }

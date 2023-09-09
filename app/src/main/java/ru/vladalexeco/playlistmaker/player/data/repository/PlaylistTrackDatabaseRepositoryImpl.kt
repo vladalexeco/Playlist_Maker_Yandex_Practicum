@@ -12,4 +12,8 @@ class PlaylistTrackDatabaseRepositoryImpl(
     override suspend fun insertTrackToPlaylistTrackDatabase(track: Track) {
         playlistTrackDatabase.playlistTrackDao().insertTrack(track.mapToPlaylistTrackEntity())
     }
+
+    override suspend fun deletePlaylistTrackFromDatabase(track: Track) {
+        playlistTrackDatabase.playlistTrackDao().deletePlaylistTrack(track.mapToPlaylistTrackEntity(newTimeStamp = false))
+    }
 }

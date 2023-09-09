@@ -12,7 +12,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class TrackAdapter(val clickListener: TrackClickListener): RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
+class TrackAdapter(
+    private val onLongClickListener: ((Track) -> Boolean) = {true},
+    private val clickListener: TrackClickListener
+
+    ): RecyclerView.Adapter<TrackAdapter.TrackHolder>() {
 
     var tracks = ArrayList<Track>()
 
@@ -44,6 +48,7 @@ class TrackAdapter(val clickListener: TrackClickListener): RecyclerView.Adapter<
     override fun onBindViewHolder(holder: TrackHolder, position: Int) {
         holder.bind(tracks[position])
         holder.itemView.setOnClickListener {clickListener.onTrackClick(tracks[position])}
+        holder.itemView.setOnLongClickListener { onLongClickListener.invoke(tracks[position]) }
     }
 
     override fun getItemCount() = tracks.size
