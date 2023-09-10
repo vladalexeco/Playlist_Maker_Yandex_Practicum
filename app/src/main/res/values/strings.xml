@@ -83,4 +83,11 @@
 
     <!--/PlaylistInfoFragment-->
 
+    <!--EditPlaylistFragment-->
+
+    <string name="edit_current_playlist">Редактировать</string>
+    <string name="save_button_edit">Сохранить</string>
+
+    <!--/EditPlaylistFragment-->
+
 </resources>

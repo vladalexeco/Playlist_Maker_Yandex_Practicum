@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import ru.vladalexeco.playlistmaker.R
 import ru.vladalexeco.playlistmaker.databinding.FragmentMedialibraryBinding
@@ -13,6 +15,7 @@ class MedialibraryFragment : Fragment() {
 
     private lateinit var binding: FragmentMedialibraryBinding
     private lateinit var tabLayoutMediator: TabLayoutMediator
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,10 +40,14 @@ class MedialibraryFragment : Fragment() {
             }
 
         tabLayoutMediator.attach()
+
     }
+
 
     override fun onDestroyView() {
         tabLayoutMediator.detach()
         super.onDestroyView()
     }
+
+
 }

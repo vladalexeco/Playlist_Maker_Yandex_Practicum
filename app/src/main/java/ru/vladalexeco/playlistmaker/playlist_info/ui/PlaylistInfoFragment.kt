@@ -28,7 +28,9 @@ import ru.vladalexeco.playlistmaker.playlist_info.presentation.PlaylistInfoViewM
 import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.R
+import ru.vladalexeco.playlistmaker.medialibrary.ui.MedialibraryFragment
 import ru.vladalexeco.playlistmaker.new_playlist.domain.models.Playlist
+import ru.vladalexeco.playlistmaker.new_playlist.ui.EditPlaylistFragment
 import ru.vladalexeco.playlistmaker.player.ui.PlayerFragment
 import ru.vladalexeco.playlistmaker.playlist_info.presentation.containers.PlaylistInfoContainer
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
@@ -165,7 +167,9 @@ class PlaylistInfoFragment : Fragment() {
 
         // Слушатели кнопок
         backArrowImageView.setOnClickListener {
-            findNavController().navigateUp()
+            findNavController().navigate(
+                R.id.action_playlistInfoFragment_to_medialibraryFragment,
+            )
         }
 
         sharePlaylistImageView.setOnClickListener {
@@ -182,7 +186,10 @@ class PlaylistInfoFragment : Fragment() {
         }
 
         editPlaylistBottomSheetFrameLayout.setOnClickListener {
-
+            findNavController().navigate(
+                R.id.action_playlistInfoFragment_to_editPlaylistFragment,
+                EditPlaylistFragment.createArgs(playlist!!)
+            )
         }
 
         deletePlaylistBottomSheetFrameLayout.setOnClickListener {
@@ -194,7 +201,9 @@ class PlaylistInfoFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
 
             override fun handleOnBackPressed() {
-                findNavController().navigateUp()
+                findNavController().navigate(
+                    R.id.action_playlistInfoFragment_to_medialibraryFragment
+                )
             }
 
         })
@@ -312,7 +321,6 @@ class PlaylistInfoFragment : Fragment() {
             if (playlist!!.filePath.isNotEmpty()) {
                 playlistCoverImageView.scaleType = ImageView.ScaleType.CENTER_CROP
                 playlistCoverImageView.setImageURI(getUriOfImageFromStorage(playlist!!.filePath))
-
 
                 playlistCoverBottomSheetImageView.setImageURI(getUriOfImageFromStorage(playlist!!.filePath))
             } else {
