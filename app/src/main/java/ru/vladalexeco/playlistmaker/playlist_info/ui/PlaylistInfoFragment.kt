@@ -14,20 +14,25 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ru.vladalexeco.playlistmaker.databinding.FragmentPlaylistInfoBinding
 import ru.vladalexeco.playlistmaker.playlist_info.presentation.PlaylistInfoViewModel
 import ru.vladalexeco.playlistmaker.root.listeners.BottomNavigationListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.vladalexeco.playlistmaker.R
+import ru.vladalexeco.playlistmaker.medialibrary.ui.MedialibraryFavouritesFragment
 import ru.vladalexeco.playlistmaker.medialibrary.ui.MedialibraryFragment
 import ru.vladalexeco.playlistmaker.new_playlist.domain.models.Playlist
 import ru.vladalexeco.playlistmaker.new_playlist.ui.EditPlaylistFragment
@@ -41,6 +46,8 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlaylistInfoFragment : Fragment() {
+
+    var isClickAllowed = true
 
     private var bottomNavigationListener: BottomNavigationListener? = null
 
@@ -61,7 +68,7 @@ class PlaylistInfoFragment : Fragment() {
 
     private val viewModel: PlaylistInfoViewModel by viewModel()
 
-    // Виджеты основного экрана
+    // Views of main screen
     private lateinit var backArrowImageView: ImageView
     private lateinit var playlistCoverImageView: ImageView
     private lateinit var nameOfPlaylistTextView: TextView
@@ -71,11 +78,11 @@ class PlaylistInfoFragment : Fragment() {
     private lateinit var sharePlaylistImageView: ImageView
     private lateinit var menuOfPlaylistImageView: ImageView
 
-    // Виджеты плейлиста Bottom Sheet
+    // Views of Playlist Bottom Sheet
     private lateinit var playlistInfoBottomSheetLinearLayout: LinearLayout
     private lateinit var playlistInfoBottomSheetRecyclerView: RecyclerView
 
-    // Виджеты меню Bottom Sheet
+    // Views of Menu Bottom Sheet
     private lateinit var playlistMenuBottomSheetLinearLayout: LinearLayout
     private lateinit var playlistCoverBottomSheetImageView: ImageView
     private lateinit var nameOfPlaylistBottomSheetTextView: TextView
@@ -83,6 +90,9 @@ class PlaylistInfoFragment : Fragment() {
     private lateinit var sharePlaylistBottomSheetFrameLayout: FrameLayout
     private lateinit var editPlaylistBottomSheetFrameLayout: FrameLayout
     private lateinit var deletePlaylistBottomSheetFrameLayout: FrameLayout
+
+    // Overlay
+    private lateinit var overlay: View
 
     // Lifecycle Callbacks
     override fun onAttach(context: Context) {
@@ -105,6 +115,7 @@ class PlaylistInfoFragment : Fragment() {
     }
 
     override fun onStop() {
+        isClickAllowed = true
         super.onStop()
         hideBottomNavigation(false)
     }
@@ -121,7 +132,7 @@ class PlaylistInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Виджеты основного экрана
+        // Views of main screen
         backArrowImageView = binding.playlistInfoBackarrowImageview
         playlistCoverImageView = binding.playlistInfoCoverImageview
         nameOfPlaylistTextView = binding.nameOfPlaylistInfoTextview
@@ -132,12 +143,12 @@ class PlaylistInfoFragment : Fragment() {
         menuOfPlaylistImageView = binding.playlistInfoMenuImageview
 
 
-        // Виджеты плейлиста Bottom Sheet
+        // Views of Playlist Bottom Sheet
         playlistInfoBottomSheetLinearLayout = binding.playlistInfoBottomSheet
         playlistInfoBottomSheetRecyclerView = binding.playlistInfoBottomSheetRecyclerview
 
 
-        // Виджеты меню Bottom Sheet
+        // Views of Menu Bottom Sheet
         playlistMenuBottomSheetLinearLayout = binding.playlistMenuBottomSheet
         playlistCoverBottomSheetImageView = binding.playlistInfoCoverMinImageview
         nameOfPlaylistBottomSheetTextView = binding.nameOfPlaylistInfoMinTextview
@@ -146,26 +157,51 @@ class PlaylistInfoFragment : Fragment() {
         editPlaylistBottomSheetFrameLayout = binding.editPlaylistFramelayout
         deletePlaylistBottomSheetFrameLayout = binding.deletePlaylistFramelayout
 
-        // recycler view
+        overlay = binding.overlay
+
+        // Recycler View
         playlistInfoBottomSheetRecyclerView.adapter = adapter
         playlistInfoBottomSheetRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        // Bottom Sheet Behavior
         bottomSheetBehavior = BottomSheetBehavior.from(playlistMenuBottomSheetLinearLayout).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
 
+        bottomSheetBehavior!!.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+                when (newState) {
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        overlay.visibility = View.GONE
+                    }
+                    else -> {
+                        overlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+        })
+
+        // Get Playlist
         if (viewModel.updatedPlaylist == null) {
             playlist = requireArguments().getSerializableExtra(CURRENT_PLAYLIST, Playlist::class.java)
         } else {
             playlist = viewModel.updatedPlaylist
         }
+        
+        if (playlist!!.listOfTracksId.isEmpty()) {
+            Toast.makeText(requireContext(), "В плейлисте пока нет треков", Toast.LENGTH_SHORT).show()
+        }
 
-        //rendering
+        //Rendering
         renderWithSerializableData()
         viewModel.getTracksFromDatabaseForCurrentPlaylist(viewModel.convertStringToList(playlist!!.listOfTracksId))
 
 
-        // Слушатели кнопок
+        // Button Listeners
         backArrowImageView.setOnClickListener {
             findNavController().navigate(
                 R.id.action_playlistInfoFragment_to_medialibraryFragment,
@@ -173,11 +209,15 @@ class PlaylistInfoFragment : Fragment() {
         }
 
         sharePlaylistImageView.setOnClickListener {
-            sharePlaylist()
+            if (clickDebounce()) {
+                sharePlaylist()
+            }
         }
 
         menuOfPlaylistImageView.setOnClickListener {
-            bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+            if (clickDebounce()) {
+                bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
         }
 
         sharePlaylistBottomSheetFrameLayout.setOnClickListener {
@@ -194,6 +234,7 @@ class PlaylistInfoFragment : Fragment() {
 
         deletePlaylistBottomSheetFrameLayout.setOnClickListener {
             if (playlist != null) {
+                bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_HIDDEN
                 showDeletePlaylistDialog()
             }
         }
@@ -229,7 +270,7 @@ class PlaylistInfoFragment : Fragment() {
     private fun showDeleteTrackDialog(track:Track) {
         MaterialAlertDialogBuilder(requireContext())
             .setMessage(getString(R.string.delete_track_message))
-            .setNeutralButton(getString(R.string.no)) { dialog, which ->
+            .setNegativeButton(getString(R.string.no)) { dialog, which ->
 
             }
             .setPositiveButton(getString(R.string.yes)) { dialog, which ->
@@ -253,7 +294,7 @@ class PlaylistInfoFragment : Fragment() {
 
         MaterialAlertDialogBuilder(requireContext())
             .setMessage(message)
-            .setNeutralButton(getString(R.string.no)) { dialog, which ->
+            .setNegativeButton(getString(R.string.no)) { dialog, which ->
 
             }
             .setPositiveButton(getString(R.string.yes)) { dialog, which ->
@@ -329,7 +370,7 @@ class PlaylistInfoFragment : Fragment() {
             }
 
             nameOfPlaylistTextView.text = playlist!!.name
-            yearOfPlaylistCreationTextView.text = viewModel.getYearFromPlaylist(playlist!!.insertTimeStamp)
+            yearOfPlaylistCreationTextView.text = playlist!!.description
 
             totalNumberOfTracksTextView.text = viewModel.pluralizeWord(playlist!!.amountOfTracks, "трек")
 
@@ -371,12 +412,25 @@ class PlaylistInfoFragment : Fragment() {
         bottomNavigationListener?.toggleBottomNavigationViewVisibility(!isHide)
     }
 
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(CLICK_DEBOUNCE_DELAY)
+                isClickAllowed = true
+            }
+        }
+
+        return current
+    }
     companion object {
         private const val CURRENT_PLAYLIST = "CURRENT_PLAYLIST"
-
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
          fun createArgs(playlist: Playlist): Bundle {
             return bundleOf(CURRENT_PLAYLIST to playlist)
         }
     }
-
 }

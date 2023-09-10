@@ -46,11 +46,14 @@ class PlaylistInfoViewModel(
                     }
                     val sumInMinutes: Int = sum / 60000
 
+                    val reversedIds = ids.reversed()
+
+                    val sortedTracks = tracksForCurrentPlaylist.sortedBy { track -> reversedIds.indexOf(track.trackId) }
 
                     _tracksForCurrentPlaylist.postValue(
                         PlaylistInfoContainer(
                             totalTime = pluralizeWord(sumInMinutes, "минута"),
-                            playlistTracks = tracksForCurrentPlaylist
+                            playlistTracks = sortedTracks
                         )
                     )
                 }

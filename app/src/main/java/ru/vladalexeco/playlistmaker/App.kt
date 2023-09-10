@@ -41,15 +41,6 @@ class App: Application() {
 
         switchTheme(sharedPreferences.getBoolean(KEY_FOR_APP_THEME, false))
 
-//        val playlistDatabase = Room.databaseBuilder(this, PlaylistDatabase::class.java, "playlist_database.db")
-//            .fallbackToDestructiveMigration()
-//            .build()
-//
-//        val applicationScope = CoroutineScope(Dispatchers.Default)
-//        applicationScope.launch {
-//            playlistDatabase.playlistDao().clearTable()
-//        }
-
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {

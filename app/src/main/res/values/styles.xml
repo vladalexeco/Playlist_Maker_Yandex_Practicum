@@ -162,6 +162,10 @@
     <style name="BackgroundPlayerStyle">
         <item name="android:background">@color/white</item>
     </style>
+
+    <style name="CardViewBackgroundStyle">
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
     <!--/Styles for new playlist fragment screen-->
 
     <!--Styles for playlist_bottom_sheet_view-->
