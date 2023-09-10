@@ -1,6 +1,7 @@
 package ru.vladalexeco.playlistmaker.playlist_info.ui
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -34,12 +35,16 @@ import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import ru.vladalexeco.playlistmaker.search.ui.TrackAdapter
 import java.io.File
 import java.io.Serializable
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class PlaylistInfoFragment : Fragment() {
 
     private var bottomNavigationListener: BottomNavigationListener? = null
 
     private lateinit var binding: FragmentPlaylistInfoBinding
+
+    var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>? = null
 
     var playlist: Playlist? = null
 
@@ -53,8 +58,6 @@ class PlaylistInfoFragment : Fragment() {
     }
 
     private val viewModel: PlaylistInfoViewModel by viewModel()
-
-    var currentAmountOfTracks: Int? = null
 
     // Виджеты основного экрана
     private lateinit var backArrowImageView: ImageView
@@ -145,12 +148,15 @@ class PlaylistInfoFragment : Fragment() {
         playlistInfoBottomSheetRecyclerView.adapter = adapter
         playlistInfoBottomSheetRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        val bottomSheetBehavior = BottomSheetBehavior.from(playlistMenuBottomSheetLinearLayout).apply {
+        bottomSheetBehavior = BottomSheetBehavior.from(playlistMenuBottomSheetLinearLayout).apply {
             state = BottomSheetBehavior.STATE_HIDDEN
         }
 
-        playlist = requireArguments().getSerializableExtra(CURRENT_PLAYLIST, Playlist::class.java)
-
+        if (viewModel.updatedPlaylist == null) {
+            playlist = requireArguments().getSerializableExtra(CURRENT_PLAYLIST, Playlist::class.java)
+        } else {
+            playlist = viewModel.updatedPlaylist
+        }
 
         //rendering
         renderWithSerializableData()
@@ -163,21 +169,16 @@ class PlaylistInfoFragment : Fragment() {
         }
 
         sharePlaylistImageView.setOnClickListener {
-            if (playlist != null) {
-                if (playlist!!.listOfTracksId.isEmpty()) {
-                    showShareEmptyPlaylistDialog()
-                } else {
-
-                }
-            }
+            sharePlaylist()
         }
 
         menuOfPlaylistImageView.setOnClickListener {
-
+            bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_COLLAPSED
         }
 
         sharePlaylistBottomSheetFrameLayout.setOnClickListener {
-
+            sharePlaylist()
+            bottomSheetBehavior!!.state = BottomSheetBehavior.STATE_HIDDEN
         }
 
         editPlaylistBottomSheetFrameLayout.setOnClickListener {
@@ -185,7 +186,9 @@ class PlaylistInfoFragment : Fragment() {
         }
 
         deletePlaylistBottomSheetFrameLayout.setOnClickListener {
-
+            if (playlist != null) {
+                showDeletePlaylistDialog()
+            }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -204,6 +207,16 @@ class PlaylistInfoFragment : Fragment() {
     }
 
     //Private functions
+    private fun sharePlaylist() {
+        if (playlist != null) {
+            if (playlist!!.listOfTracksId.isEmpty()) {
+                showShareEmptyPlaylistDialog()
+            } else {
+                sendMessageToExternalResources()
+            }
+        }
+    }
+
     private fun showDeleteTrackDialog(track:Track) {
         MaterialAlertDialogBuilder(requireContext())
             .setMessage(getString(R.string.delete_track_message))
@@ -226,6 +239,33 @@ class PlaylistInfoFragment : Fragment() {
 
     private fun showDeletePlaylistDialog() {
 
+        val fromStringResource = getString(R.string.delete_playlist_ask)
+        val message = "$fromStringResource \"${playlist?.name}\"?"
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage(message)
+            .setNeutralButton(getString(R.string.no)) { dialog, which ->
+
+            }
+            .setPositiveButton(getString(R.string.yes)) { dialog, which ->
+                viewModel.deletePlaylist(playlist)
+                findNavController().navigateUp()
+            }
+            .show()
+    }
+
+    private fun sendMessageToExternalResources() {
+
+        var message = viewModel.getMessageForExternalResources(playlist)
+
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, message)
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 
     private fun deleteTrackFromPlaylist(track:Track) {
@@ -240,6 +280,8 @@ class PlaylistInfoFragment : Fragment() {
         val updatedPlaylist = newListStringOfTrackIds?.let { playlist?.copy(listOfTracksId = it, amountOfTracks = playlist!!.amountOfTracks - 1)}
 
         playlist = updatedPlaylist
+
+        viewModel.updatedPlaylist = updatedPlaylist
 
         if (updatedPlaylist != null) {
             viewModel.updatePlaylist(updatedPlaylist)
@@ -266,11 +308,11 @@ class PlaylistInfoFragment : Fragment() {
     private fun renderWithSerializableData() {
         if (playlist != null) {
 
-            currentAmountOfTracks = playlist!!.amountOfTracks
 
             if (playlist!!.filePath.isNotEmpty()) {
                 playlistCoverImageView.scaleType = ImageView.ScaleType.CENTER_CROP
                 playlistCoverImageView.setImageURI(getUriOfImageFromStorage(playlist!!.filePath))
+
 
                 playlistCoverBottomSheetImageView.setImageURI(getUriOfImageFromStorage(playlist!!.filePath))
             } else {
@@ -280,9 +322,11 @@ class PlaylistInfoFragment : Fragment() {
 
             nameOfPlaylistTextView.text = playlist!!.name
             yearOfPlaylistCreationTextView.text = viewModel.getYearFromPlaylist(playlist!!.insertTimeStamp)
+
             totalNumberOfTracksTextView.text = viewModel.pluralizeWord(playlist!!.amountOfTracks, "трек")
 
             nameOfPlaylistBottomSheetTextView.text = playlist!!.name
+
             totalNumberOfTracksBottomSheetTextView.text = viewModel.pluralizeWord(playlist!!.amountOfTracks, "трек")
 
         } else {
@@ -291,6 +335,9 @@ class PlaylistInfoFragment : Fragment() {
     }
 
     private fun renderWithDatabaseData(playlistInfoContainer: PlaylistInfoContainer) {
+
+        viewModel.listOfCurrentTracks.clear()
+        viewModel.listOfCurrentTracks.addAll(playlistInfoContainer.playlistTracks)
 
         adapter.tracks.clear()
         adapter.tracks.addAll(playlistInfoContainer.playlistTracks)

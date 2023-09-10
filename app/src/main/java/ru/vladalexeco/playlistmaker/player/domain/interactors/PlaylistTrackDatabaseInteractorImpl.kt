@@ -14,4 +14,8 @@ class PlaylistTrackDatabaseInteractorImpl(
     override suspend fun deletePlaylistTrackFromDatabase(track: Track) {
         playlistTrackDatabaseRepository.deletePlaylistTrackFromDatabase(track)
     }
+
+    override suspend fun deletePlaylistTrackFromDatabaseById(id: Int) {
+        playlistTrackDatabaseRepository.deletePlaylistTrackFromDatabaseById(id)
+    }
 }

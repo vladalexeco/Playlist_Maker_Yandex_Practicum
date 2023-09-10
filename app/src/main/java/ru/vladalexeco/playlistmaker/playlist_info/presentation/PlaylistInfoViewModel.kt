@@ -14,6 +14,7 @@ import ru.vladalexeco.playlistmaker.playlist_info.presentation.containers.Playli
 import ru.vladalexeco.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import kotlin.collections.ArrayList
 
 class PlaylistInfoViewModel(
@@ -25,6 +26,8 @@ class PlaylistInfoViewModel(
 
 
     ) : ViewModel() {
+
+    var updatedPlaylist: Playlist? = null
 
     val listOfCurrentTracks = ArrayList<Track>()
 
@@ -66,7 +69,7 @@ class PlaylistInfoViewModel(
                         }
                     }
 
-                    deleteTrackFromPlaylistTrackDatabase(track)
+                    deletePlaylistTrackFromDatabaseById(track.trackId)
 
                 }
         }
@@ -75,6 +78,12 @@ class PlaylistInfoViewModel(
     fun updatePlaylist(playlist: Playlist) {
         viewModelScope.launch {
             playlistDatabaseInteractor.insertPlaylistToDatabase(playlist)
+        }
+    }
+
+    fun deletePlaylistTrackFromDatabaseById(id: Int) {
+        viewModelScope.launch {
+            playlistTrackDatabaseInteractor.deletePlaylistTrackFromDatabaseById(id)
         }
     }
 
@@ -103,6 +112,38 @@ class PlaylistInfoViewModel(
         if (string.isEmpty()) return ArrayList<Int>()
 
         return ArrayList<Int>(string.split(",").map { item -> item.toInt() })
+    }
+
+    fun getMessageForExternalResources(playlist: Playlist?): String {
+        var count = 0
+
+        var message = ""
+
+        val nameOfPlaylist = playlist?.name ?: ""
+        val description = if (playlist?.description.isNullOrEmpty()) "without description" else playlist?.description
+        val amountOfTracks = playlist?.amountOfTracks?.let { pluralizeWord(it, "трек") } ?: ""
+
+        message += nameOfPlaylist + "\n" + description + "\n" + amountOfTracks + "\n"
+
+        listOfCurrentTracks.forEach {track ->
+            count++
+
+            var formattedTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTime?.toLong())
+
+            var trackString = "$count ${track.artistName} - ${track.trackName} ($formattedTime) \n"
+
+            message += trackString
+        }
+
+        return message
+    }
+
+    fun deletePlaylist(playlist: Playlist?) {
+        if (playlist != null) {
+            viewModelScope.launch {
+                playlistMediaDatabaseInteractor.deletePlaylist(playlist)
+            }
+        }
     }
 
     fun pluralizeWord(number: Int, word: String): String {

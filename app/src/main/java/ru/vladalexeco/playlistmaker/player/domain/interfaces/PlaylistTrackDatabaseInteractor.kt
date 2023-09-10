@@ -6,4 +6,6 @@ interface PlaylistTrackDatabaseInteractor {
     suspend fun insertTrackToPlaylistTrackDatabase(track: Track)
 
     suspend fun deletePlaylistTrackFromDatabase(track: Track)
+
+    suspend fun deletePlaylistTrackFromDatabaseById(id: Int)
 }

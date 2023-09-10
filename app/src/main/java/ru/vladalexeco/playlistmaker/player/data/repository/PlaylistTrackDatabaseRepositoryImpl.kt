@@ -16,4 +16,8 @@ class PlaylistTrackDatabaseRepositoryImpl(
     override suspend fun deletePlaylistTrackFromDatabase(track: Track) {
         playlistTrackDatabase.playlistTrackDao().deletePlaylistTrack(track.mapToPlaylistTrackEntity(newTimeStamp = false))
     }
+
+    override suspend fun deletePlaylistTrackFromDatabaseById(id: Int) {
+        playlistTrackDatabase.playlistTrackDao().deleteTrackById(id)
+    }
 }

@@ -7,6 +7,7 @@ import ru.vladalexeco.playlistmaker.medialibrary.domain.db.PlaylistMediaDatabase
 
 import ru.vladalexeco.playlistmaker.new_playlist.domain.models.Playlist
 import ru.vladalexeco.playlistmaker.new_playlist.domain.models.mapToPlaylist
+import ru.vladalexeco.playlistmaker.new_playlist.domain.models.mapToPlaylistEntity
 
 class PlaylistMediaDatabaseRepositoryImpl(private val playlistDatabase: PlaylistDatabase) :
     PlaylistMediaDatabaseRepository {
@@ -15,5 +16,8 @@ class PlaylistMediaDatabaseRepositoryImpl(private val playlistDatabase: Playlist
         emit(playlistEntityList.map { playlistEntity -> playlistEntity.mapToPlaylist() })
     }
 
+    override suspend fun deletePlaylist(playlist: Playlist) {
+        playlistDatabase.playlistDao().deletePlaylist(playlist.mapToPlaylistEntity())
+    }
 
 }

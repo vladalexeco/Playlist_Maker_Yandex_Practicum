@@ -79,6 +79,7 @@
     <string name="no">Нет</string>
     <string name="ok">OK</string>
     <string name="share_empty_playlist">В этом плейлисте нет списка треков, которым можно поделиться</string>
+    <string name="delete_playlist_ask">Хотите удалить плейлист</string>
 
     <!--/PlaylistInfoFragment-->
 
