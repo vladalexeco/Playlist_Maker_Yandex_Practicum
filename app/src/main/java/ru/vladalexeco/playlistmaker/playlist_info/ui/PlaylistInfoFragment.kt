@@ -203,9 +203,9 @@ class PlaylistInfoFragment : Fragment() {
 
         // Button Listeners
         backArrowImageView.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_playlistInfoFragment_to_medialibraryFragment,
-            )
+
+            findNavController().popBackStack(R.id.medialibraryFragment ,false)
+
         }
 
         sharePlaylistImageView.setOnClickListener {
@@ -242,9 +242,9 @@ class PlaylistInfoFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
 
             override fun handleOnBackPressed() {
-                findNavController().navigate(
-                    R.id.action_playlistInfoFragment_to_medialibraryFragment
-                )
+
+                findNavController().popBackStack(R.id.medialibraryFragment ,false)
+
             }
 
         })
@@ -268,7 +268,8 @@ class PlaylistInfoFragment : Fragment() {
     }
 
     private fun showDeleteTrackDialog(track:Track) {
-        MaterialAlertDialogBuilder(requireContext())
+        MaterialAlertDialogBuilder(requireContext(), R.style.MyDialogTheme)
+            .setTitle(getString(R.string.delete_track_title))
             .setMessage(getString(R.string.delete_track_message))
             .setNegativeButton(getString(R.string.no)) { dialog, which ->
 
@@ -280,7 +281,7 @@ class PlaylistInfoFragment : Fragment() {
     }
 
     private fun showShareEmptyPlaylistDialog() {
-        MaterialAlertDialogBuilder(requireContext())
+        MaterialAlertDialogBuilder(requireContext(), R.style.MyDialogTheme)
             .setMessage(getString(R.string.share_empty_playlist))
             .setPositiveButton(getString(R.string.ok)) { dialog, which ->
             }
@@ -289,11 +290,9 @@ class PlaylistInfoFragment : Fragment() {
 
     private fun showDeletePlaylistDialog() {
 
-        val fromStringResource = getString(R.string.delete_playlist_ask)
-        val message = "$fromStringResource \"${playlist?.name}\"?"
-
-        MaterialAlertDialogBuilder(requireContext())
-            .setMessage(message)
+        MaterialAlertDialogBuilder(requireContext(), R.style.MyDialogTheme)
+            .setTitle(getString(R.string.delete_playlist_title))
+            .setMessage(getString(R.string.delete_playlist_ask))
             .setNegativeButton(getString(R.string.no)) { dialog, which ->
 
             }

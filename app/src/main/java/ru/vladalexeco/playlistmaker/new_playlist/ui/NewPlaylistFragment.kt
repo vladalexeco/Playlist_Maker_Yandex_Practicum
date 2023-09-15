@@ -106,10 +106,10 @@ class NewPlaylistFragment : BaseFragment() {
     }
 
     private fun showDialog() {
-        MaterialAlertDialogBuilder(requireContext())
+        MaterialAlertDialogBuilder(requireContext(), R.style.MyDialogTheme)
             .setTitle(getString(R.string.complete_playlist))
             .setMessage(getString(R.string.data_lost))
-            .setNeutralButton(getString(R.string.cancel)) { dialog, which ->
+            .setNegativeButton(getString(R.string.cancel)) { dialog, which ->
 
             }
             .setPositiveButton(getString(R.string.complete)) { dialog, which ->
