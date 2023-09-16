@@ -50,7 +50,6 @@ class PlaylistInfoViewModel(
 
                     val sortedTracks = tracksForCurrentPlaylist
                         .sortedBy { track -> reversedIds.indexOf(track.trackId) }
-                        .map { it.copy(artworkUrl = it.artworkUrl?.replaceAfterLast('/', "60x60bb.jpg")) }
 
                     _tracksForCurrentPlaylist.postValue(
                         PlaylistInfoContainer(
