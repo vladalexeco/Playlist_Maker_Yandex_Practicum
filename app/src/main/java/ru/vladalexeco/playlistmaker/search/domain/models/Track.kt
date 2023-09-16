@@ -11,6 +11,7 @@ data class Track(
     val artistName: String?,
     @SerializedName("trackTimeMillis") val trackTime: String?,
     @SerializedName("artworkUrl100") val artworkUrl: String?,
+    val artworkUrl60: String?,
     val collectionName: String?,
     val releaseDate: String?,
     val primaryGenreName: String?,
@@ -29,6 +30,7 @@ fun Track.mapToPlaylistTrackEntity(newTimeStamp: Boolean = true): PlaylistTrackE
         artistName,
         trackTime,
         artworkUrl,
+        artworkUrl60,
         collectionName,
         releaseDate,
         primaryGenreName,
@@ -39,7 +41,19 @@ fun Track.mapToPlaylistTrackEntity(newTimeStamp: Boolean = true): PlaylistTrackE
 }
 
 fun Track.mapToPlayerTrack(): PlayerTrack {
-    return PlayerTrack(trackId, trackName, artistName, trackTime, artworkUrl, collectionName, releaseDate, primaryGenreName, country, previewUrl, null)
+    return PlayerTrack(
+        trackId,
+        trackName,
+        artistName,
+        trackTime,
+        artworkUrl,
+        artworkUrl60,
+        collectionName,
+        releaseDate,
+        primaryGenreName,
+        country,
+        previewUrl,
+        null)
 }
 
 fun PlaylistTrackEntity.mapToTrack(): Track {
@@ -49,6 +63,7 @@ fun PlaylistTrackEntity.mapToTrack(): Track {
         artistName,
         trackTime,
         artworkUrl,
+        artworkUrl60,
         collectionName,
         releaseDate,
         primaryGenreName,

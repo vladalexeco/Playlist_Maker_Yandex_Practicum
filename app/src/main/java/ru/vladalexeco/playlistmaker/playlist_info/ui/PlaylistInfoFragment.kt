@@ -62,7 +62,7 @@ class PlaylistInfoFragment : Fragment() {
         return true
     }
 
-    val adapter = TrackAdapter(onLongClickAction) { track ->
+    val adapter = TrackAdapter(onLongClickAction, true) { track ->
         onClickItem(track)
     }
 
