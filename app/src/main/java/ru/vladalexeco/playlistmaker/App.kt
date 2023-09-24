@@ -2,8 +2,13 @@ package ru.vladalexeco.playlistmaker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.room.Room
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import ru.vladalexeco.playlistmaker.database.PlaylistDatabase
 import ru.vladalexeco.playlistmaker.di.*
 
 const val SHARED_PREFERENCES = "SHARED_PREFERENCES"
@@ -27,7 +32,8 @@ class App: Application() {
                 sharingModule,
                 medialibraryModule,
                 databaseModule,
-                newPlayListModule
+                newPlayListModule,
+                playlistInfoModule
             )
         }
 

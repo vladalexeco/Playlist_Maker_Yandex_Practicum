@@ -5,7 +5,9 @@ import ru.vladalexeco.playlistmaker.new_playlist.domain.db.PlaylistDatabaseRepos
 import ru.vladalexeco.playlistmaker.new_playlist.domain.models.Playlist
 
 class PlaylistDatabaseInteractorImpl(
+
     private val playlistDatabaseRepository: PlaylistDatabaseRepository
+
     ) : PlaylistDatabaseInteractor {
     override suspend fun insertPlaylistToDatabase(playlist: Playlist) {
         playlistDatabaseRepository.insertPlaylistToDatabase(playlist)

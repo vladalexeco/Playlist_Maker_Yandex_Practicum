@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_medialibraryFragment_to_playerFragment"
             app:destination="@id/playerFragment" />
+        <action
+            android:id="@+id/action_medialibraryFragment_to_playlistInfoFragment"
+            app:destination="@id/playlistInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -44,5 +47,28 @@
         <action
             android:id="@+id/action_playerFragment_to_newPlaylistFragment"
             app:destination="@id/newPlaylistFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/playlistInfoFragment"
+        android:name="ru.vladalexeco.playlistmaker.playlist_info.ui.PlaylistInfoFragment"
+        android:label="fragment_playlist_info"
+        tools:layout="@layout/fragment_playlist_info" >
+        <action
+            android:id="@+id/action_playlistInfoFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
+        <action
+            android:id="@+id/action_playlistInfoFragment_to_editPlaylistFragment"
+            app:destination="@id/editPlaylistFragment" />
+        <action
+            android:id="@+id/action_playlistInfoFragment_to_medialibraryFragment"
+            app:destination="@id/medialibraryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editPlaylistFragment"
+        android:name="ru.vladalexeco.playlistmaker.new_playlist.ui.EditPlaylistFragment"
+        android:label="EditPlaylistFragment" >
+        <action
+            android:id="@+id/action_editPlaylistFragment_to_playlistInfoFragment"
+            app:destination="@id/playlistInfoFragment" />
     </fragment>
 </navigation>
